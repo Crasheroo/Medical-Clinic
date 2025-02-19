@@ -41,5 +41,4 @@ public class PatientController {
     public Patient editPatient(@PathVariable String email, @RequestBody Patient patient) {
         return patientService.editPatientByEmail(email, patient.getPassword(), patient.getIdCardNo(), patient.getFirstName(), patient.getLastName(), patient.getPhoneNumber(), patient.getBirthday());
     }
-
 }
