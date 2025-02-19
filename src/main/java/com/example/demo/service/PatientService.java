@@ -1,24 +1,26 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Patient;
+import com.example.demo.repository.PatientRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class PatientService {
-    private List<Patient> patients;
+    PatientRepository patientRepository;
 
-    public PatientService(List<Patient> patients) {
-        this.patients = new ArrayList<>();
+    public PatientService(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
     }
 
     public List<Patient> getAllPatients() {
-        return patients;
+        return patientRepository.getPatients();
     }
 
     public Optional<Patient> getPatientByEmail(String email) {
-        return patients.stream()
+        List<Patient> allPatients = getAllPatients();
+
+        return allPatients.stream()
                 .filter(patient -> patient.getEmail().equalsIgnoreCase(email))
                 .findAny();
     }
@@ -29,12 +31,13 @@ public class PatientService {
         }
 
         Patient patient = new Patient(email, password, idCardNo, firstName, lastName, phoneNumber, birthday);
+        List<Patient> patients = getAllPatients();
         patients.add(patient);
     }
 
     public void removePatientByEmail(String email) {
         Optional<Patient> patientByEmail = getPatientByEmail(email);
-        patientByEmail.ifPresent(patients::remove);
+        patientByEmail.ifPresent(getAllPatients()::remove);
     }
 
     public void editPatientByEmail(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
