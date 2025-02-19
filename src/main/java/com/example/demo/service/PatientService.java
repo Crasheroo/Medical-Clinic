@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.service;
 
 import com.example.demo.model.Patient;
 
@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class PatientController {
+public class PatientService {
     private List<Patient> patients;
 
-    public PatientController(List<Patient> patients) {
+    public PatientService(List<Patient> patients) {
         this.patients = new ArrayList<>();
     }
 
