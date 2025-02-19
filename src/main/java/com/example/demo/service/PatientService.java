@@ -2,10 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.model.Patient;
 import com.example.demo.repository.PatientRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+@Service
 public class PatientService {
     PatientRepository patientRepository;
 
@@ -17,39 +18,37 @@ public class PatientService {
         return patientRepository.getPatients();
     }
 
-    public Optional<Patient> getPatientByEmail(String email) {
+    public Patient getPatientByEmail(String email) {
         List<Patient> allPatients = getAllPatients();
 
         return allPatients.stream()
                 .filter(patient -> patient.getEmail().equalsIgnoreCase(email))
-                .findAny();
+                .findAny()
+                .get();
     }
 
-    public void addNewPatient(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
-        if (getPatientByEmail(email).isPresent()) {
-            return;
-        }
-
-        Patient patient = new Patient(email, password, idCardNo, firstName, lastName, phoneNumber, birthday);
-        List<Patient> patients = getAllPatients();
-        patients.add(patient);
+    public Patient addNewPatient(Patient patient) {
+        return patientRepository.save(patient);
     }
 
     public void removePatientByEmail(String email) {
-        Optional<Patient> patientByEmail = getPatientByEmail(email);
-        patientByEmail.ifPresent(getAllPatients()::remove);
+        Patient patientByEmail = getPatientByEmail(email);
+        if (getAllPatients().contains(patientByEmail)) {
+            getAllPatients().remove(patientByEmail);
+        }
     }
 
-    public void editPatientByEmail(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
-        Optional<Patient> patientByEmail = getPatientByEmail(email);
-        patientByEmail.ifPresent(patient -> {
-            patient.setPassword(password);
-            patient.setIdCardNo(idCardNo);
-            patient.setFirstName(firstName);
-            patient.setLastName(lastName);
-            patient.setPhoneNumber(phoneNumber);
-            patient.setBirthday(birthday);
-        });
+    public Patient editPatientByEmail(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
+        Patient patient = patientRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Patient with email " + email + " not found"));
 
+        patient.setPassword(password);
+        patient.setIdCardNo(idCardNo);
+        patient.setFirstName(firstName);
+        patient.setLastName(lastName);
+        patient.setPhoneNumber(phoneNumber);
+        patient.setBirthday(birthday);
+
+        return patientRepository.save(patient);
     }
 }
