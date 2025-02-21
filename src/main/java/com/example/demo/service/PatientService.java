@@ -31,8 +31,10 @@ public class PatientService {
     }
 
     public void removePatientByEmail(String email) {
-        patientRepository.deleteByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
+        boolean removed = patientRepository.deleteByEmail(email);
+        if (!removed) {
+            throw new IllegalArgumentException("Patient with email " + email + " not found");
+        }
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {

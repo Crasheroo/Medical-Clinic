@@ -19,9 +19,8 @@ public class PatientRepository {
         return new ArrayList<>(patients);
     }
 
-    public Optional<String> deleteByEmail(String email) {
-        boolean removed = patients.removeIf(patient -> patient.getEmail().equalsIgnoreCase(email));
-        return removed ? Optional.of(email) : Optional.empty();
+    public boolean deleteByEmail(String email) {
+        return patients.removeIf(patient -> patient.getEmail().equalsIgnoreCase(email));
     }
 
     public Optional<Patient> findByEmail(String email) {
