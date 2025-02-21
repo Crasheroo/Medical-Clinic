@@ -24,17 +24,15 @@ public class PatientService {
     }
 
     public Patient addPatient(Patient patient) {
-        patientRepository.findByEmail(patient.getEmail())
-                .ifPresent(p -> {
-                    throw new IllegalArgumentException("Patient with email " + patient.getEmail() + " already exists");
-                });
+        if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Patient with email " + patient.getEmail() + " already exists");
+        }
         return patientRepository.save(patient);
     }
 
     public void removePatientByEmail(String email) {
         patientRepository.deleteByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
-
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {
