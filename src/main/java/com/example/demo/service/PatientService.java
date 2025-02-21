@@ -42,3 +42,4 @@ public class PatientService {
                 .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
     }
 }
+
