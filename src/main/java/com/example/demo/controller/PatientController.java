@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
-    private PatientService patientService;
+    private final PatientService patientService;
 
     public PatientController(PatientService patientService) {
         this.patientService = patientService;
@@ -21,24 +21,25 @@ public class PatientController {
         return patientService.getAllPatients();
     }
 
-    @GetMapping("/email")
+    @GetMapping("/{email}")
     public Patient getPatientByEmail(@PathVariable("email") String email) {
         return patientService.getPatientByEmail(email);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/email/{email}")
+    @DeleteMapping("/{email}")
     public void removePatient(@PathVariable("email") String email) {
         patientService.removePatientByEmail(email);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Patient addNewPatient(@RequestBody Patient patient) {
-        return patientService.addNewPatient(patient);
+    public Patient addPatient(@RequestBody Patient patient) {
+        return patientService.addPatient(patient);
     }
 
-    @PutMapping("/email/{email}")
+    @PutMapping("/{email}")
     public Patient editPatient(@PathVariable String email, @RequestBody Patient patient) {
-        return patientService.editPatientByEmail(email, patient.getPassword(), patient.getIdCardNo(), patient.getFirstName(), patient.getLastName(), patient.getPhoneNumber(), patient.getBirthday());
+        return patientService.editPatientByEmail(email, patient);
     }
 }

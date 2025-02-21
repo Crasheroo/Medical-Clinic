@@ -1,17 +1,18 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Patient {
     private String email;
     private String password;
-    private Long idCardNo;
+    private String idCardNo;
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private String birthday;
+    private LocalDate birthday;
 
-    public Patient(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
+    public Patient(String email, String password, String idCardNo, String firstName, String lastName, String phoneNumber, LocalDate birthday) {
         this.email = email;
         this.password = password;
         this.idCardNo = idCardNo;
@@ -29,7 +30,7 @@ public class Patient {
         return password;
     }
 
-    public Long getIdCardNo() {
+    public String getIdCardNo() {
         return idCardNo;
     }
 
@@ -45,7 +46,7 @@ public class Patient {
         return phoneNumber;
     }
 
-    public String getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
@@ -57,7 +58,7 @@ public class Patient {
         this.password = password;
     }
 
-    public void setIdCardNo(Long idCardNo) {
+    public void setIdCardNo(String idCardNo) {
         this.idCardNo = idCardNo;
     }
 
@@ -73,7 +74,7 @@ public class Patient {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 

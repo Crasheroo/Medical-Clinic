@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public class PatientService {
-    PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
 
     public PatientService(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
@@ -19,36 +19,26 @@ public class PatientService {
     }
 
     public Patient getPatientByEmail(String email) {
-        List<Patient> allPatients = getAllPatients();
-
-        return allPatients.stream()
-                .filter(patient -> patient.getEmail().equalsIgnoreCase(email))
-                .findAny()
-                .get();
+        return patientRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
     }
 
-    public Patient addNewPatient(Patient patient) {
+    public Patient addPatient(Patient patient) {
+        patientRepository.findByEmail(patient.getEmail())
+                .ifPresent(p -> {
+                    throw new IllegalArgumentException("Patient with email " + patient.getEmail() + " already exists");
+                });
         return patientRepository.save(patient);
     }
 
     public void removePatientByEmail(String email) {
-        Patient patientByEmail = getPatientByEmail(email);
-        if (getAllPatients().contains(patientByEmail)) {
-            getAllPatients().remove(patientByEmail);
-        }
+        patientRepository.deleteByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
+
     }
 
-    public Patient editPatientByEmail(String email, String password, Long idCardNo, String firstName, String lastName, String phoneNumber, String birthday) {
-        Patient patient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Patient with email " + email + " not found"));
-
-        patient.setPassword(password);
-        patient.setIdCardNo(idCardNo);
-        patient.setFirstName(firstName);
-        patient.setLastName(lastName);
-        patient.setPhoneNumber(phoneNumber);
-        patient.setBirthday(birthday);
-
-        return patientRepository.save(patient);
+    public Patient editPatientByEmail(String email, Patient patient) {
+        return patientRepository.updateByEmail(patient, email)
+                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
     }
 }
