@@ -1,6 +1,6 @@
-package com.example.demo.repository;
+package com.example.medicalclinic.repository;
 
-import com.example.demo.model.Patient;
+import com.example.medicalclinic.model.Patient;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

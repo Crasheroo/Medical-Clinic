@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.medicalclinic.controller;
 
-import com.example.demo.model.Patient;
-import com.example.demo.service.PatientService;
+import com.example.medicalclinic.model.Patient;
+import com.example.medicalclinic.service.PatientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

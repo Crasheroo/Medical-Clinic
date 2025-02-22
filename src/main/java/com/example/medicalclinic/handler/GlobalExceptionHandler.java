@@ -1,4 +1,4 @@
-package com.example.demo.handler;
+package com.example.medicalclinic.handler;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

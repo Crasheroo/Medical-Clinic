@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.medicalclinic.service;
 
-import com.example.demo.model.Patient;
-import com.example.demo.repository.PatientRepository;
+import com.example.medicalclinic.model.Patient;
+import com.example.medicalclinic.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
