@@ -1,5 +1,6 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,12 @@ public class PatientService {
 
     public Patient getPatientByEmail(String email) {
         return patientRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
+                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 
     public Patient addPatient(Patient patient) {
         if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Patient with email " + patient.getEmail() + " already exists");
+            throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
         }
         return patientRepository.save(patient);
     }
@@ -33,13 +34,13 @@ public class PatientService {
     public void removePatientByEmail(String email) {
         boolean removed = patientRepository.deleteByEmail(email);
         if (!removed) {
-            throw new IllegalArgumentException("Patient with email " + email + " not found");
+            throw new PatientException("Patient with email: " + email + " not found");
         }
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {
         return patientRepository.updateByEmail(patient, email)
-                .orElseThrow(() -> new IllegalArgumentException("Patient with email " + email + " not found"));
+                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 }
 
