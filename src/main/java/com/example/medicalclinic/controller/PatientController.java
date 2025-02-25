@@ -2,19 +2,17 @@ package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.service.PatientService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
     private final PatientService patientService;
-
-    public PatientController(PatientService patientService) {
-        this.patientService = patientService;
-    }
 
     @GetMapping
     public List<Patient> getPatients() {

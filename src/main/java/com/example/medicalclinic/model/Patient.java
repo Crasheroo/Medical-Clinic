@@ -1,8 +1,12 @@
 package com.example.medicalclinic.model;
 
-import java.time.LocalDate;
-import java.util.Objects;
+import lombok.Builder;
+import lombok.Data;
 
+import java.time.LocalDate;
+
+@Builder
+@Data
 public class Patient {
     private String email;
     private String password;
@@ -12,94 +16,27 @@ public class Patient {
     private String phoneNumber;
     private LocalDate birthday;
 
-    public Patient(String email, String password, String idCardNo, String firstName, String lastName, String phoneNumber, LocalDate birthday) {
-        this.email = email;
-        this.password = password;
-        this.idCardNo = idCardNo;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.birthday = birthday;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getIdCardNo() {
-        return idCardNo;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setIdCardNo(String idCardNo) {
-        this.idCardNo = idCardNo;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Patient patient)) return false;
-        return Objects.equals(email, patient.email) && Objects.equals(password, patient.password) && Objects.equals(idCardNo, patient.idCardNo) && Objects.equals(firstName, patient.firstName) && Objects.equals(lastName, patient.lastName) && Objects.equals(phoneNumber, patient.phoneNumber) && Objects.equals(birthday, patient.birthday);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(email, password, idCardNo, firstName, lastName, phoneNumber, birthday);
-    }
-
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", idCardNo=" + idCardNo +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", birthday=" + birthday +
-                '}';
+    public void updateFrom(Patient other) {
+        if (other.getPassword() != null) {
+            this.password = other.getPassword();
+        }
+        if (other.getFirstName() != null) {
+            this.firstName = other.getFirstName();
+        }
+        if (other.getLastName() != null) {
+            this.lastName = other.getLastName();
+        }
+        if (other.getBirthday() != null) {
+            this.birthday = other.getBirthday();
+        }
+        if (other.getIdCardNo() != null) {
+            this.idCardNo = other.getIdCardNo();
+        }
+        if (other.getEmail() != null) {
+            this.email = other.getEmail();
+        }
+        if (other.getPhoneNumber() != null) {
+            this.phoneNumber = other.getPhoneNumber();
+        }
     }
 }

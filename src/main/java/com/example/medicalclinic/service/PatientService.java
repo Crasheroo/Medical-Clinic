@@ -3,17 +3,15 @@ package com.example.medicalclinic.service;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.repository.PatientRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
-
-    public PatientService(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
-    }
 
     public List<Patient> getAllPatients() {
         return patientRepository.getPatients();
@@ -43,4 +41,3 @@ public class PatientService {
                 .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 }
-
