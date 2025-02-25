@@ -40,4 +40,12 @@ public class PatientService {
         return patientRepository.updateByEmail(patient, email)
                 .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
+
+    public Patient changePassword(String email, String password) {
+        if (password == null) {
+            throw new PatientException("Password cannot be null");
+        }
+        return patientRepository.updatePasswordByEmail(email, password);
+    }
+
 }

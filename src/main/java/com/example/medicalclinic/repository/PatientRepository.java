@@ -1,12 +1,11 @@
 package com.example.medicalclinic.repository;
 
+import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.Patient;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RequiredArgsConstructor
 @Repository
@@ -26,6 +25,16 @@ public class PatientRepository {
                 .filter(patient -> patient.getEmail().equalsIgnoreCase(email))
                 .findFirst();
     }
+
+    public Patient updatePasswordByEmail(String email, String password) {
+        return findByEmail(email)
+                .map(patient -> {
+                    patient.setPassword(password);
+                    return patient;
+                })
+                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
+    }
+
 
     public Optional<Patient> updateByEmail(Patient updatedPatient, String referencedEmail) {
         return findByEmail(referencedEmail)
