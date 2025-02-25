@@ -28,19 +28,21 @@ public class PatientRepository {
     }
 
     public Optional<Patient> updateByEmail(Patient updatedPatient, String referencedEmail) {
-        return findByEmail(referencedEmail).map(existingPatient -> {
-            existingPatient.updateFrom(updatedPatient);
-            return existingPatient;
-        });
+        return findByEmail(referencedEmail)
+                .map(existingPatient -> {
+                    existingPatient.updateFrom(updatedPatient);
+                    return existingPatient;
+                });
     }
 
     public Patient save(Patient patient) {
-        return findByEmail(patient.getEmail()).map(existingPatient -> {
-            existingPatient.updateFrom(patient);
-            return existingPatient;
-        }).orElseGet(() -> {
-            patients.add(patient);
-            return patient;
-        });
+        return findByEmail(patient.getEmail())
+                .map(existingPatient -> {
+                    existingPatient.updateFrom(patient);
+                    return existingPatient;
+                }).orElseGet(() -> {
+                    patients.add(patient);
+                    return patient;
+                });
     }
 }
