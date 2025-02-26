@@ -37,6 +37,12 @@ public class PatientService {
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {
+        Patient existingPatient = getPatientByEmail(email);
+
+        if (patient.getIdCardNo() != null && !existingPatient.getIdCardNo().equals(patient.getIdCardNo())) {
+            throw new PatientException("ID Card Number cannot be changed");
+        }
+
         return patientRepository.updateByEmail(patient, email);
     }
 
