@@ -37,6 +37,7 @@ public class PatientService {
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {
+        validateNotNullFields(patient);
         Patient existingPatient = getPatientByEmail(email);
 
         if (patient.getIdCardNo() != null && !existingPatient.getIdCardNo().equals(patient.getIdCardNo())) {
