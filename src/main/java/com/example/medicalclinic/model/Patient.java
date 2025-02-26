@@ -29,9 +29,6 @@ public class Patient {
         if (other.getBirthday() != null) {
             this.birthday = other.getBirthday();
         }
-        if (other.getIdCardNo() != null) {
-            this.idCardNo = other.getIdCardNo();
-        }
         if (other.getEmail() != null) {
             this.email = other.getEmail();
         }
@@ -39,4 +36,5 @@ public class Patient {
             this.phoneNumber = other.getPhoneNumber();
         }
     }
+
 }
