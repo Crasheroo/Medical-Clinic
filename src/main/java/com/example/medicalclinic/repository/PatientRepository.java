@@ -35,14 +35,13 @@ public class PatientRepository {
                 .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 
-
-    public Optional<Patient> updateByEmail(Patient updatedPatient, String referencedEmail) {
-        return findByEmail(referencedEmail)
-                .map(existingPatient -> {
-                    existingPatient.updateFrom(updatedPatient);
-                    return existingPatient;
-                });
+    public Patient updateByEmail(Patient updatedPatient, String referencedEmail) {
+        Patient existingPatient = findByEmail(referencedEmail)
+                .orElseThrow(() -> new PatientException("Patient with email: " + referencedEmail + " not found"));
+        existingPatient.updateFrom(updatedPatient);
+        return existingPatient;
     }
+
 
     public Patient save(Patient patient) {
         return findByEmail(patient.getEmail())

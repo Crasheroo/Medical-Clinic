@@ -37,8 +37,7 @@ public class PatientService {
     }
 
     public Patient editPatientByEmail(String email, Patient patient) {
-        return patientRepository.updateByEmail(patient, email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
+        return patientRepository.updateByEmail(patient, email);
     }
 
     public Patient changePassword(String email, String password) {
