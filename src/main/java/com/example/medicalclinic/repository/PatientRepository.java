@@ -50,4 +50,16 @@ public class PatientRepository {
         patients.add(patient);
         return patient;
     }
+
+    public void validateNotNullFields(Patient patient) {
+        if (patient.getFirstName() == null ||
+                patient.getLastName() == null ||
+                patient.getEmail() == null ||
+                patient.getPhoneNumber() == null ||
+                patient.getBirthday() == null ||
+                patient.getPassword() == null ||
+                patient.getIdCardNo() == null) {
+            throw new PatientException("Patient fields cannot be null");
+        }
+    }
 }
