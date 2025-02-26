@@ -44,13 +44,10 @@ public class PatientRepository {
 
 
     public Patient save(Patient patient) {
-        return findByEmail(patient.getEmail())
-                .map(existingPatient -> {
-                    existingPatient.updateFrom(patient);
-                    return existingPatient;
-                }).orElseGet(() -> {
-                    patients.add(patient);
-                    return patient;
-                });
+        if (findByEmail(patient.getEmail()).isPresent()) {
+            throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
+        }
+        patients.add(patient);
+        return patient;
     }
 }

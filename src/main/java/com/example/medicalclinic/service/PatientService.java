@@ -23,6 +23,7 @@ public class PatientService {
     }
 
     public Patient addPatient(Patient patient) {
+        validateNotNullFields(patient);
         if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
             throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
         }
@@ -47,4 +48,15 @@ public class PatientService {
         return patientRepository.updatePasswordByEmail(email, password);
     }
 
+    private void validateNotNullFields(Patient patient) {
+        if (patient.getFirstName() == null ||
+                patient.getLastName() == null ||
+                patient.getEmail() == null ||
+                patient.getPhoneNumber() == null ||
+                patient.getBirthday() == null ||
+                patient.getPassword() == null ||
+                patient.getIdCardNo() == null) {
+            throw new PatientException("Patient fields cannot be null");
+        }
+    }
 }
