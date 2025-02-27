@@ -3,6 +3,7 @@ package com.example.medicalclinic.controller;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
+import com.example.medicalclinic.model.PatientDTO;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,12 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping
-    public List<Patient> getPatients() {
+    public List<PatientDTO> getPatientsDTO() {
         return patientService.getAllPatients();
     }
 
     @GetMapping("/{email}")
-    public Patient getPatientByEmail(@PathVariable("email") String email) {
+    public PatientDTO getPatientByEmail(@PathVariable("email") String email) {
         return patientService.getPatientByEmail(email);
     }
 

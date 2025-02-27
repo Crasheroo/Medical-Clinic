@@ -2,6 +2,7 @@ package com.example.medicalclinic.repository;
 
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.Patient;
+import com.example.medicalclinic.model.PatientDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,20 @@ public class PatientRepository {
         return List.copyOf(patients);
     }
 
+    public List<PatientDTO> getPatientsAsDTO() {
+        return getPatients().stream()
+                .map(patient -> PatientDTO.builder()
+                        .email(patient.getEmail())
+                        .idCardNo(patient.getIdCardNo())
+                        .firstName(patient.getFirstName())
+                        .lastName(patient.getLastName())
+                        .phoneNumber(patient.getPhoneNumber())
+                        .birthday(patient.getBirthday())
+                        .build()
+                )
+                .toList();
+    }
+
     public boolean deleteByEmail(String email) {
         return patients.removeIf(patient -> patient.getEmail().equalsIgnoreCase(email));
     }
@@ -24,6 +39,20 @@ public class PatientRepository {
         return patients.stream()
                 .filter(patient -> patient.getIdCardNo().equalsIgnoreCase(idCardNo))
                 .findFirst();
+    }
+
+    public PatientDTO getPatientDTOByEmail(String email) {
+        return findByEmail(email)
+                .map(patient -> PatientDTO.builder()
+                        .email(patient.getEmail())
+                        .idCardNo(patient.getIdCardNo())
+                        .firstName(patient.getFirstName())
+                        .lastName(patient.getLastName())
+                        .phoneNumber(patient.getPhoneNumber())
+                        .birthday(patient.getBirthday())
+                        .build()
+                )
+                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 
     public Optional<Patient> findByEmail(String email) {

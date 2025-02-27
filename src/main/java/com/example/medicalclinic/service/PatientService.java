@@ -2,6 +2,7 @@ package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.Patient;
+import com.example.medicalclinic.model.PatientDTO;
 import com.example.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,12 @@ import java.util.List;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    public List<Patient> getAllPatients() {
-        return patientRepository.getPatients();
+    public List<PatientDTO> getAllPatients() {
+        return patientRepository.getPatientsAsDTO();
     }
 
-    public Patient getPatientByEmail(String email) {
-        return patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
+    public PatientDTO getPatientByEmail(String email) {
+        return patientRepository.getPatientDTOByEmail(email);
     }
 
     public Patient addPatient(Patient patient) {
