@@ -1,6 +1,5 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.model.PatientDTO;
