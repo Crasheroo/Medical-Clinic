@@ -23,10 +23,6 @@ public class PatientService {
     }
 
     public Patient addPatient(Patient patient) {
-        patientRepository.validateNotNullFields(patient);
-        if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
-            throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
-        }
         return patientRepository.save(patient);
     }
 
@@ -37,14 +33,8 @@ public class PatientService {
         }
     }
 
-    public Patient editPatientByEmail(String email, Patient patient) {
-        patientRepository.validateNotNullFields(patient);
-        Patient existingPatient = getPatientByEmail(email);
-
-        if (patient.getIdCardNo() != null && !existingPatient.getIdCardNo().equals(patient.getIdCardNo())) {
-            throw new PatientException("ID Card Number cannot be changed");
-        }
-        return patientRepository.updateByEmail(patient, email);
+    public Patient editPatientByEmail(String email, Patient updatedPatient) {
+        return patientRepository.updateByEmail(email, updatedPatient);
     }
 
     public Patient changePassword(String email, String password) {

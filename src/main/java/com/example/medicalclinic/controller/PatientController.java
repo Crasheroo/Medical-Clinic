@@ -1,6 +1,7 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.model.PasswordRequest;
+import com.example.medicalclinic.exception.PatientException;
+import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,7 +44,7 @@ public class PatientController {
     }
 
     @PatchMapping("/{email}/password")
-    public Patient editPatientPassword(@PathVariable String email, @RequestBody PasswordRequest request) {
-        return patientService.changePassword(email, request.getPassword());
+    public Patient editPatientPassword(@PathVariable String email, @RequestBody ChangePasswordRequest request) {
+        return patientService.changePassword(email, request.password());
     }
 }
