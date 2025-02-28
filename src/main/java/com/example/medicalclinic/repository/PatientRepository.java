@@ -1,6 +1,7 @@
 package com.example.medicalclinic.repository;
 
 import com.example.medicalclinic.exception.PatientException;
+import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.model.PatientDTO;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +19,7 @@ public class PatientRepository {
     }
 
     public List<PatientDTO> getPatientsAsDTO() {
-        return getPatients().stream()
-                .map(patient -> PatientDTO.builder()
-                        .email(patient.getEmail())
-                        .idCardNo(patient.getIdCardNo())
-                        .firstName(patient.getFirstName())
-                        .lastName(patient.getLastName())
-                        .phoneNumber(patient.getPhoneNumber())
-                        .birthday(patient.getBirthday())
-                        .build()
-                )
-                .toList();
+        return PatientMapper.INSTANCE.toDTOList(getPatients());
     }
 
     public boolean deleteByEmail(String email) {
@@ -43,15 +34,7 @@ public class PatientRepository {
 
     public PatientDTO getPatientDTOByEmail(String email) {
         return findByEmail(email)
-                .map(patient -> PatientDTO.builder()
-                        .email(patient.getEmail())
-                        .idCardNo(patient.getIdCardNo())
-                        .firstName(patient.getFirstName())
-                        .lastName(patient.getLastName())
-                        .phoneNumber(patient.getPhoneNumber())
-                        .birthday(patient.getBirthday())
-                        .build()
-                )
+                .map(PatientMapper.INSTANCE::toDTO)
                 .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 
@@ -73,7 +56,9 @@ public class PatientRepository {
         Patient existingPatient = findByEmail(referencedEmail)
                 .orElseThrow(() -> new PatientException("Patient with email: " + referencedEmail + " not found"));
 
-        if (updatedPatient.getEmail() != null && !updatedPatient.getEmail().equals(existingPatient.getEmail())) {
+        patients.removeIf(p -> p.getEmail().equalsIgnoreCase(existingPatient.getEmail()));
+
+        if (updatedPatient.getEmail() != null && !updatedPatient.getEmail().equalsIgnoreCase(existingPatient.getEmail())) {
             if (findByEmail(updatedPatient.getEmail()).isPresent()) {
                 throw new PatientException("E-mail " + updatedPatient.getEmail() + " is already used.");
             }
@@ -81,6 +66,7 @@ public class PatientRepository {
         }
 
         existingPatient.updateFrom(updatedPatient);
+        patients.add(existingPatient);
         return existingPatient;
     }
 

@@ -1,11 +1,14 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.model.PatientDTO;
+import com.example.medicalclinic.model.ResponseMessage;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
     private final PatientService patientService;
+    private final PatientMapper patientMapper = PatientMapper.INSTANCE;
 
     @GetMapping
     public List<PatientDTO> getPatientsDTO() {
@@ -28,18 +32,20 @@ public class PatientController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{email}")
-    public void removePatient(@PathVariable("email") String email) {
-        patientService.removePatientByEmail(email);
+    public ResponseEntity<ResponseMessage> removePatient(@PathVariable("email") String email) {
+        ResponseMessage responseMessage = patientService.removePatientByEmail(email);
+        return ResponseEntity.ok(responseMessage);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Patient addPatient(@RequestBody Patient patient) {
-        return patientService.addPatient(patient);
+    public PatientDTO addPatient(@RequestBody Patient patient) {
+        Patient savedPatient = patientService.addPatient(patient);
+        return patientMapper.toDTO(savedPatient);
     }
 
     @PutMapping("/{email}")
-    public Patient editPatient(@PathVariable String email, @RequestBody Patient patient) {
+    public PatientDTO editPatient(@PathVariable String email, @RequestBody Patient patient) {
         return patientService.editPatientByEmail(email, patient);
     }
 
