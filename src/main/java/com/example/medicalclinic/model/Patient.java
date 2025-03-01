@@ -40,5 +40,4 @@ public class Patient {
             this.phoneNumber = other.getPhoneNumber();
         }
     }
-
 }

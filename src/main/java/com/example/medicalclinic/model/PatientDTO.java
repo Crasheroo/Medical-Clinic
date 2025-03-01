@@ -1,9 +1,6 @@
 package com.example.medicalclinic.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -14,8 +11,7 @@ import java.time.LocalDate;
 public class PatientDTO {
     private String email;
     private String idCardNo;
-    private String firstName;
-    private String lastName;
+    private String fullName;
     private String phoneNumber;
     private LocalDate birthday;
 }
