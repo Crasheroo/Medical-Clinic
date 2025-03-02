@@ -9,14 +9,15 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PatientMapper {
-    PatientMapper INSTANCE = Mappers.getMapper(PatientMapper.class);
 
-    @Mapping(source = "patient", target = "fullName", qualifiedByName = "toFullName")
-    PatientDTO toDTO(Patient patient);
+    @Mapping(source = ".", target = "fullName", qualifiedByName = "toFullName")
+    PatientDTO toDTO (Patient patient);
 
-    List<PatientDTO> toDTOList(List<Patient> patients);
+    Patient toEntity (PatientDTO patientDto);
+    List<PatientDTO> toDTOList (List<Patient> patients);
+    List<Patient> toEntityList (List<PatientDTO> patients);
 
     @Named("toFullName")
     default String mapToFullName(Patient patient) {

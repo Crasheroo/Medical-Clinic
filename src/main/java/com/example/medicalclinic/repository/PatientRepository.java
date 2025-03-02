@@ -13,14 +13,12 @@ import java.util.*;
 @Repository
 public class PatientRepository {
     private final List<Patient> patients;
+    private final PatientMapper patientMapper;
 
     public List<Patient> getPatients() {
         return List.copyOf(patients);
     }
 
-    public List<PatientDTO> getPatientsAsDTO() {
-        return PatientMapper.INSTANCE.toDTOList(getPatients());
-    }
 
     public boolean deleteByEmail(String email) {
         return patients.removeIf(patient -> patient.getEmail().equalsIgnoreCase(email));
@@ -30,12 +28,6 @@ public class PatientRepository {
         return patients.stream()
                 .filter(patient -> patient.getIdCardNo().equalsIgnoreCase(idCardNo))
                 .findFirst();
-    }
-
-    public PatientDTO getPatientDTOByEmail(String email) {
-        return findByEmail(email)
-                .map(PatientMapper.INSTANCE::toDTO)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
     }
 
     public Optional<Patient> findByEmail(String email) {

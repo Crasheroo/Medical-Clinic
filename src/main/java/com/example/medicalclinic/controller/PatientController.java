@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/patients")
 public class PatientController {
     private final PatientService patientService;
-    private final PatientMapper patientMapper = PatientMapper.INSTANCE;
+    private final PatientMapper patientMapper;
 
     @GetMapping
     public List<PatientDTO> getPatientsDTO() {
@@ -32,9 +32,8 @@ public class PatientController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{email}")
-    public ResponseEntity<ResponseMessage> removePatient(@PathVariable("email") String email) {
-        ResponseMessage responseMessage = patientService.removePatientByEmail(email);
-        return ResponseEntity.ok(responseMessage);
+    public ResponseMessage removePatient(@PathVariable("email") String email) {
+        return patientService.removePatientByEmail(email);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

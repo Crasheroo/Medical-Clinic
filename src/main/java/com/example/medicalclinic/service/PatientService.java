@@ -15,13 +15,14 @@ import java.util.List;
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
+    private final PatientMapper patientMapper;
 
     public List<PatientDTO> getAllPatients() {
-        return patientRepository.getPatientsAsDTO();
+         return patientMapper.toDTOList(patientRepository.getPatients());
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        return patientRepository.getPatientDTOByEmail(email);
+        return patientMapper.toDTO(patientRepository.findByEmail(email).get());
     }
 
     public Patient addPatient(Patient patient) {
@@ -38,7 +39,7 @@ public class PatientService {
 
     public PatientDTO editPatientByEmail(String email, Patient updatedPatient) {
         Patient updated = patientRepository.updateByEmail(email, updatedPatient);
-        return PatientMapper.INSTANCE.toDTO(updated);
+        return patientMapper.toDTO(updated);
     }
 
     public Patient changePassword(String email, String password) {
