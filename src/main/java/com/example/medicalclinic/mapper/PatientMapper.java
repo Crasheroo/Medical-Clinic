@@ -12,10 +12,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PatientMapper {
 
-    @Mapping(source = ".", target = "fullName", qualifiedByName = "toFullName")
+    @Mapping(source = "patient", target = "fullName", qualifiedByName = "toFullName")
     PatientDTO toDTO (Patient patient);
 
-    Patient toEntity (PatientDTO patientDto);
     List<PatientDTO> toDTOList (List<Patient> patients);
     List<Patient> toEntityList (List<PatientDTO> patients);
 
