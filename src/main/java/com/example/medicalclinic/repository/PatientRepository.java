@@ -19,7 +19,6 @@ public class PatientRepository {
         return List.copyOf(patients);
     }
 
-
     public boolean deleteByEmail(String email) {
         return patients.removeIf(patient -> patient.getEmail().equalsIgnoreCase(email));
     }
