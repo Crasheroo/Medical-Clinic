@@ -1,9 +1,7 @@
 package com.example.medicalclinic.repository;
 
 import com.example.medicalclinic.exception.PatientException;
-import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.Patient;
-import com.example.medicalclinic.model.PatientDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +11,6 @@ import java.util.*;
 @Repository
 public class PatientRepository {
     private final List<Patient> patients;
-    private final PatientMapper patientMapper;
 
     public List<Patient> getPatients() {
         return List.copyOf(patients);
