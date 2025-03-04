@@ -37,8 +37,7 @@ public class PatientController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public PatientDTO addPatient(@RequestBody Patient patient) {
-        Patient savedPatient = patientService.addPatient(patient);
-        return patientMapper.toDTO(savedPatient);
+        return patientMapper.toDTO(patientService.addPatient(patient));
     }
 
     @PutMapping("/{email}")
