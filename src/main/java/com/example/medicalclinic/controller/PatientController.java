@@ -4,11 +4,9 @@ import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.model.PatientDTO;
-import com.example.medicalclinic.model.ResponseMessage;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,15 +30,14 @@ public class PatientController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{email}")
-    public ResponseMessage removePatient(@PathVariable("email") String email) {
-        return patientService.removePatientByEmail(email);
+    public void removePatient(@PathVariable("email") String email) {
+        patientService.removePatientByEmail(email);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public PatientDTO addPatient(@RequestBody Patient patient) {
-        Patient savedPatient = patientService.addPatient(patient);
-        return patientMapper.toDTO(savedPatient);
+        return patientMapper.toDTO(patientService.addPatient(patient));
     }
 
     @PutMapping("/{email}")
