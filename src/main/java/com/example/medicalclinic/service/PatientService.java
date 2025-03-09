@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -20,13 +19,11 @@ public class PatientService {
     public List<PatientDTO> getAllPatients() {
         return patientRepository.findAll().stream()
                 .map(patientMapper::toDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        Patient patient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
-        return patientMapper.toDTO(patient);
+        return patientMapper.toDTO(findPatientByEmail(email));
     }
 
     public Patient addPatient(Patient patient) {
@@ -37,36 +34,34 @@ public class PatientService {
     }
 
     public void removePatientByEmail(String email) {
-        Patient patient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
-        patientRepository.delete(patient);
+        patientRepository.delete(findPatientByEmail(email));
     }
 
     public PatientDTO editPatientByEmail(String email, Patient updatedPatient) {
-        Patient updated = updateByEmail(email, updatedPatient);
-        return patientMapper.toDTO(updated);
-    }
-
-    public Patient updateByEmail(String email, Patient updatedPatient) {
-        Patient existingPatient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
-
-        if (updatedPatient.getEmail() != null && !updatedPatient.getEmail().equals(email)) {
-            if (patientRepository.findByEmail(updatedPatient.getEmail()).isPresent()) {
-                throw new PatientException("Email " + updatedPatient.getEmail() + " is already in use.");
-            }
-            existingPatient.setEmail(updatedPatient.getEmail());
-        }
-
+        Patient existingPatient = findPatientByEmail(email);
+        updateEmailIfChanged(existingPatient, updatedPatient);
         existingPatient.updateFrom(updatedPatient);
-        return patientRepository.save(existingPatient);
+        return patientMapper.toDTO(patientRepository.save(existingPatient));
     }
 
     public Patient changePassword(String email, String password) {
-        Patient existingPatient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
-
+        Patient existingPatient = findPatientByEmail(email);
         existingPatient.setPassword(password);
         return patientRepository.save(existingPatient);
+    }
+
+    private Patient findPatientByEmail(String email) {
+        return patientRepository.findByEmail(email)
+                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
+    }
+
+    private void updateEmailIfChanged(Patient existingPatient, Patient updatedPatient) {
+        String newEmail = updatedPatient.getEmail();
+        if (newEmail != null && !newEmail.equals(existingPatient.getEmail())) {
+            if (patientRepository.findByEmail(newEmail).isPresent()) {
+                throw new PatientException("Email " + newEmail + " is already in use.");
+            }
+            existingPatient.setEmail(newEmail);
+        }
     }
 }

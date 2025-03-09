@@ -16,15 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class FacilityService {
     private final FacilityRepository facilityRepository;
-    private final DoctorRepository doctorRepository;
 
     public List<Facility> getAllFacilities() {
         return facilityRepository.findAll();
     }
 
     public Facility getFacilityByName(String facilityName) {
-        return facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+        return findFacilityByName(facilityName);
     }
 
     public Facility addFacility(Facility facility) {
@@ -35,52 +33,19 @@ public class FacilityService {
     }
 
     public void removeFacilityByName(String facilityName) {
-        Facility facility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+        Facility facility = findFacilityByName(facilityName);
         facilityRepository.delete(facility);
     }
 
     public Facility updateByName(String facilityName, Facility updatedFacility) {
-        Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
-
+        Facility existingFacility = findFacilityByName(facilityName);
         existingFacility.updateFrom(updatedFacility);
         return facilityRepository.save(existingFacility);
     }
 
-    public List<String> assignDoctorToFacility(String facilityName, Long doctorId) {
-        Facility facility = facilityRepository.findByFacilityName(facilityName)
+
+    private Facility findFacilityByName(String facilityName) {
+        return facilityRepository.findByFacilityName(facilityName)
                 .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
-
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new DoctorException("Doctor with ID: " + doctorId + " not found"));
-
-        if (!facility.getDoctors().contains(doctor)) {
-            facility.getDoctors().add(doctor);
-            doctor.getFacilities().add(facility);
-        }
-
-        facilityRepository.save(facility);
-        doctorRepository.save(doctor);
-
-        return facility.getDoctors().stream()
-                .map(Doctor::getEmail)
-                .collect(Collectors.toList());
-    }
-
-    public void removeDoctorFromFacility(String facilityName, String email) {
-        Facility facility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
-
-        Doctor doctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-
-        if (facility.getDoctors().contains(doctor)) {
-            facility.getDoctors().remove(doctor);
-            doctor.getFacilities().remove(facility);
-
-            facilityRepository.save(facility);
-            doctorRepository.save(doctor);
-        }
     }
 }

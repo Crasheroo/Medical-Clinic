@@ -50,14 +50,13 @@ public class DoctorController {
         return doctorService.changePassword(email, request.password());
     }
 
-    @PostMapping("/{doctorId}/facilities/{facilityName}")
-    public DoctorDTO assignDoctorToFacility(@PathVariable Long doctorId, @PathVariable String facilityName) {
-        return doctorService.assignDoctorToFacility(doctorId, facilityName);
+    @PostMapping("/{doctorId}/facilities/{facilityId}")
+    public DoctorDTO assignDoctorToFacility(@PathVariable Long doctorId, @PathVariable Long facilityId) {
+        return doctorService.assignDoctorToFacility(doctorId, facilityId);
     }
 
-    @DeleteMapping("/{email}/facilities/{facilityName}")
-    public void removeFacilityFromDoctor(@PathVariable String email, @PathVariable String facilityName) {
-        doctorService.removeFacilityFromDoctor(email, facilityName);
+    @DeleteMapping("/{doctorId}/facilities/{facilityId}")
+    public void removeFacilityFromDoctor(@PathVariable Long doctorId, @PathVariable Long facilityId) {
+        doctorService.removeFacilityFromDoctor(doctorId, facilityId);
     }
-
 }

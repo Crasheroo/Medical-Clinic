@@ -11,6 +11,7 @@ import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,15 +22,13 @@ public class DoctorService {
     private final DoctorMapper doctorMapper;
 
     public List<DoctorDTO> getAllDoctors() {
-        List<Doctor> doctors = doctorRepository.findAll();
-        doctors.forEach(doctor -> doctor.getFacilities().size());
-        return doctors.stream().map(doctorMapper::toDTO).toList();
+        return doctorRepository.findAll().stream()
+                .map(doctorMapper::toDTO)
+                .toList();
     }
 
     public DoctorDTO getDoctorByEmail(String email) {
-        Doctor doctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-        return doctorMapper.toDTO(doctor);
+        return doctorMapper.toDTO(findDoctorByEmail(email));
     }
 
     @Transactional
@@ -42,73 +41,68 @@ public class DoctorService {
 
     @Transactional
     public void removeDoctorByEmail(String email) {
-        Doctor doctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-
-        doctor.getFacilities().forEach(facility -> facility.getDoctors().remove(doctor));
-
+        Doctor doctor = findDoctorByEmail(email);
         doctorRepository.delete(doctor);
     }
 
     public DoctorDTO editDoctorByEmail(String email, Doctor updatedDoctor) {
-        Doctor updated = updateByEmail(email, updatedDoctor);
-        return doctorMapper.toDTO(updated);
-    }
-
-    public Doctor updateByEmail(String email, Doctor updatedDoctor) {
-        Doctor existingDoctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-
-        if (updatedDoctor.getEmail() != null && !updatedDoctor.getEmail().equals(email)) {
-            if (doctorRepository.findByEmail(updatedDoctor.getEmail()).isPresent()) {
-                throw new DoctorException("Email " + updatedDoctor.getEmail() + " is already in use.");
-            }
-            existingDoctor.setEmail(updatedDoctor.getEmail());
-        }
-
+        Doctor existingDoctor = findDoctorByEmail(email);
+        updateEmailIfChanged(existingDoctor, updatedDoctor);
         existingDoctor.updateFrom(updatedDoctor);
-        return doctorRepository.save(existingDoctor);
+        return doctorMapper.toDTO(doctorRepository.save(existingDoctor));
     }
 
     public Doctor changePassword(String email, String password) {
-        Doctor existingDoctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-
+        Doctor existingDoctor = findDoctorByEmail(email);
         existingDoctor.setPassword(password);
         return doctorRepository.save(existingDoctor);
     }
 
-    public DoctorDTO assignDoctorToFacility(Long doctorId, String facilityName) {
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new DoctorException("Doctor with ID: " + doctorId + " not found"));
-
-        Facility facility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+    @Transactional
+    public DoctorDTO assignDoctorToFacility(Long doctorId, Long facilityId) {
+        Doctor doctor = findDoctorById(doctorId);
+        Facility facility = findFacilityById(facilityId);
 
         if (!doctor.getFacilities().contains(facility)) {
             doctor.getFacilities().add(facility);
-            facility.getDoctors().add(doctor);
         }
 
-        doctorRepository.save(doctor);
-        facilityRepository.save(facility);
-
-        return doctorMapper.toDTO(doctor);
+        return doctorMapper.toDTO(doctorRepository.save(doctor));
     }
 
-    public void removeFacilityFromDoctor(String email, String facilityName) {
-        Doctor doctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-
-        Facility facility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+    @Transactional
+    public void removeFacilityFromDoctor(Long doctorId, Long facilityId) {
+        Doctor doctor = findDoctorById(doctorId);
+        Facility facility = findFacilityById(facilityId);
 
         if (doctor.getFacilities().contains(facility)) {
             doctor.getFacilities().remove(facility);
-            facility.getDoctors().remove(doctor);
-
             doctorRepository.save(doctor);
-            facilityRepository.save(facility);
+        }
+    }
+
+    private Doctor findDoctorByEmail(String email) {
+        return doctorRepository.findByEmail(email)
+                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
+    }
+
+    private Doctor findDoctorById(Long id) {
+        return doctorRepository.findById(id)
+                .orElseThrow(() -> new DoctorException("Doctor with ID: " + id + " not found"));
+    }
+
+    private Facility findFacilityById(Long facilityId) {
+        return facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new FacilityException("Facility with ID: " + facilityId + " not found"));
+    }
+
+    private void updateEmailIfChanged(Doctor existingDoctor, Doctor updatedDoctor) {
+        String newEmail = updatedDoctor.getEmail();
+        if (newEmail != null && !newEmail.equals(existingDoctor.getEmail())) {
+            if (doctorRepository.findByEmail(newEmail).isPresent()) {
+                throw new DoctorException("Email " + newEmail + " is already in use.");
+            }
+            existingDoctor.setEmail(newEmail);
         }
     }
 }

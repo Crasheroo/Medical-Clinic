@@ -24,14 +24,13 @@ public class Facility {
     private String postcode;
     private String street;
     private String buildingNumber;
-    @ManyToMany
-    @JsonIgnore
+    @ManyToMany(mappedBy = "facilities")
     private Set<Doctor> doctors = new HashSet<>();
 
     public List<String> getDoctorEmails() {
         return doctors.stream()
                 .map(Doctor::getEmail)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void updateFrom(Facility updatedFacility) {

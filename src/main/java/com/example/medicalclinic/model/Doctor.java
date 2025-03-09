@@ -17,7 +17,12 @@ public class Doctor {
     private Long id;
     private String email;
     private String password;
-    @ManyToMany(mappedBy = "doctors", cascade = CascadeType.REMOVE)
+    @ManyToMany
+    @JoinTable(
+            name = "doctor_facility",
+            joinColumns = @JoinColumn(name = "doctor_id"),
+            inverseJoinColumns = @JoinColumn(name = "facility_id")
+    )
     private Set<Facility> facilities = new LinkedHashSet<>();
 
     public void updateFrom(Doctor other) {
