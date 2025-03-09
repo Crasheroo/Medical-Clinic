@@ -10,9 +10,8 @@ import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +26,6 @@ public class DoctorService {
         return doctors.stream().map(doctorMapper::toDTO).toList();
     }
 
-
     public DoctorDTO getDoctorByEmail(String email) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
@@ -41,9 +39,13 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 
+    @Transactional
     public void removeDoctorByEmail(String email) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
+
+        doctor.getFacilities().forEach(facility -> facility.getDoctors().remove(doctor));
+
         doctorRepository.delete(doctor);
     }
 
@@ -91,5 +93,21 @@ public class DoctorService {
         facilityRepository.save(facility);
 
         return doctorMapper.toDTO(doctor);
+    }
+
+    public void removeFacilityFromDoctor(String email, String facilityName) {
+        Doctor doctor = doctorRepository.findByEmail(email)
+                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
+
+        Facility facility = facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+
+        if (doctor.getFacilities().contains(facility)) {
+            doctor.getFacilities().remove(facility);
+            facility.getDoctors().remove(doctor);
+
+            doctorRepository.save(doctor);
+            facilityRepository.save(facility);
+        }
     }
 }

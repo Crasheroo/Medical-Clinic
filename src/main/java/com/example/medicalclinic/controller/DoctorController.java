@@ -50,8 +50,14 @@ public class DoctorController {
         return doctorService.changePassword(email, request.password());
     }
 
-    @PostMapping("/{doctorId}/assign-facility/{facilityName}")
+    @PostMapping("/{doctorId}/facilities/{facilityName}")
     public DoctorDTO assignDoctorToFacility(@PathVariable Long doctorId, @PathVariable String facilityName) {
         return doctorService.assignDoctorToFacility(doctorId, facilityName);
     }
+
+    @DeleteMapping("/{email}/facilities/{facilityName}")
+    public void removeFacilityFromDoctor(@PathVariable String email, @PathVariable String facilityName) {
+        doctorService.removeFacilityFromDoctor(email, facilityName);
+    }
+
 }

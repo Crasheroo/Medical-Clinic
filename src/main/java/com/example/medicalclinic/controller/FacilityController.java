@@ -38,11 +38,17 @@ public class FacilityController {
 
     @PutMapping("/{facilityName}")
     public Facility editFacility(@PathVariable String facilityName, @RequestBody Facility facility) {
-        return facilityService.editFacilityByName(facilityName, facility);
+        return facilityService.updateByName(facilityName, facility);
     }
 
-    @PostMapping("/{facilityName}/assign-doctor/{doctorId}")
+    @PostMapping("/{facilityName}/doctors/{doctorId}")
     public List<String> assignDoctorToFacility(@PathVariable String facilityName, @PathVariable Long doctorId) {
         return facilityService.assignDoctorToFacility(facilityName, doctorId);
     }
+
+    @DeleteMapping("/{facilityName}/doctors/{email}")
+    public void removeDoctorFromFacility(@PathVariable String facilityName, @PathVariable String email) {
+        facilityService.removeDoctorFromFacility(facilityName, email);
+    }
+
 }

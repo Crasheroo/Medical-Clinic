@@ -1,10 +1,8 @@
 package com.example.medicalclinic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -19,9 +17,8 @@ public class Doctor {
     private Long id;
     private String email;
     private String password;
-    @ManyToMany(mappedBy = "doctors")
-    @JsonIgnore
-    private List<Facility> facilities;
+    @ManyToMany(mappedBy = "doctors", cascade = CascadeType.REMOVE)
+    private Set<Facility> facilities = new LinkedHashSet<>();
 
     public void updateFrom(Doctor other) {
         if (other.getPassword() != null) {
@@ -30,5 +27,17 @@ public class Doctor {
         if (other.getEmail() != null) {
             this.email = other.getEmail();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Doctor doctor)) return false;
+        return Objects.equals(id, doctor.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

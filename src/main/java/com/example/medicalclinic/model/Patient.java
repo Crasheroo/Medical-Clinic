@@ -2,8 +2,8 @@ package com.example.medicalclinic.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -44,5 +44,17 @@ public class Patient {
         if (other.getPhoneNumber() != null) {
             this.phoneNumber = other.getPhoneNumber();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Patient patient)) return false;
+        return Objects.equals(id, patient.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -6,7 +6,6 @@ import com.example.medicalclinic.model.Doctor;
 import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +40,6 @@ public class FacilityService {
         facilityRepository.delete(facility);
     }
 
-    public Facility editFacilityByName(String facilityName, Facility updatedFacility) {
-        return updateByName(facilityName, updatedFacility);
-    }
-
     public Facility updateByName(String facilityName, Facility updatedFacility) {
         Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
                 .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
@@ -73,4 +68,19 @@ public class FacilityService {
                 .collect(Collectors.toList());
     }
 
+    public void removeDoctorFromFacility(String facilityName, String email) {
+        Facility facility = facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility with name: " + facilityName + " not found"));
+
+        Doctor doctor = doctorRepository.findByEmail(email)
+                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
+
+        if (facility.getDoctors().contains(doctor)) {
+            facility.getDoctors().remove(doctor);
+            doctor.getFacilities().remove(facility);
+
+            facilityRepository.save(facility);
+            doctorRepository.save(doctor);
+        }
+    }
 }
