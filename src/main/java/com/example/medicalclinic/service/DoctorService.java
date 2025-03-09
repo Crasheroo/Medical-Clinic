@@ -32,6 +32,7 @@ public class DoctorService {
         return doctorMapper.toDTO(doctor);
     }
 
+    @Transactional
     public Doctor addDoctor(Doctor doctor) {
         if (doctorRepository.findByEmail(doctor.getEmail()).isPresent()) {
             throw new DoctorException("Doctor with email: " + doctor.getEmail() + " already exists");
