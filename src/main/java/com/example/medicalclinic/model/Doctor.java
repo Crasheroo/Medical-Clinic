@@ -23,7 +23,7 @@ public class Doctor {
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
-    private Set<Facility> facilities = new LinkedHashSet<>();
+    private Set<Facility> facilities = new HashSet<>();
 
     public void updateFrom(Doctor other) {
         if (other.getPassword() != null) {
