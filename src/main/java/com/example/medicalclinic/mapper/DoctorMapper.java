@@ -21,7 +21,9 @@ public interface DoctorMapper {
 
     @Named("mapFacilityNames")
     static List<String> mapFacilityNames(List<Facility> facilities) {
-        if (facilities == null) return List.of();
+        if (facilities == null) {
+            return List.of();
+        }
         return facilities.stream()
                 .map(Facility::getFacilityName)
                 .toList();
