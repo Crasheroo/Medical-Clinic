@@ -27,12 +27,6 @@ public class Facility {
     @ManyToMany(mappedBy = "facilities")
     private Set<Doctor> doctors = new HashSet<>();
 
-    public List<String> getDoctorEmails() {
-        return doctors.stream()
-                .map(Doctor::getEmail)
-                .toList();
-    }
-
     public void updateFrom(Facility updatedFacility) {
         if (updatedFacility.getFacilityName() != null) {
             this.setFacilityName(updatedFacility.getFacilityName());
