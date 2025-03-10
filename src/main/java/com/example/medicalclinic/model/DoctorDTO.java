@@ -14,7 +14,7 @@ import java.util.Objects;
 public class DoctorDTO {
     private Long id;
     private String email;
-    private List<String> facilityNames;
+    private List<Long> facilityIds;
 
     @Override
     public boolean equals(Object o) {
