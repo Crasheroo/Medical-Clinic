@@ -1,9 +1,7 @@
 package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.mapper.DoctorMapper;
-import com.example.medicalclinic.model.ChangePasswordRequest;
-import com.example.medicalclinic.model.Doctor;
-import com.example.medicalclinic.model.DoctorDTO;
+import com.example.medicalclinic.model.*;
 import com.example.medicalclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
