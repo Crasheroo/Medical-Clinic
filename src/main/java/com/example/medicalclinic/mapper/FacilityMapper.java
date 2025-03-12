@@ -6,6 +6,7 @@ import com.example.medicalclinic.model.Facility;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Set;

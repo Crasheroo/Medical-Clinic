@@ -5,6 +5,8 @@ import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.*;
 import com.example.medicalclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +20,11 @@ public class DoctorController {
     private final DoctorMapper doctorMapper;
 
     @GetMapping
-    public List<DoctorDTO> getDoctors() {
-        return doctorService.getAllDoctors();
+    public List<DoctorDTO> getDoctors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return doctorService.getAllDoctors(PageRequest.of(page, size));
     }
 
     @GetMapping("/{email}")

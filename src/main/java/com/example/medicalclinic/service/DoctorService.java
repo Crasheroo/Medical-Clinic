@@ -9,6 +9,7 @@ import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,8 @@ public class DoctorService {
     private final FacilityRepository facilityRepository;
     private final DoctorMapper doctorMapper;
 
-    public List<DoctorDTO> getAllDoctors() {
-        return doctorRepository.findAll().stream()
+    public List<DoctorDTO> getAllDoctors(Pageable pageable) {
+        return doctorRepository.findAll(pageable).stream()
                 .map(doctorMapper::toDTO)
                 .toList();
     }

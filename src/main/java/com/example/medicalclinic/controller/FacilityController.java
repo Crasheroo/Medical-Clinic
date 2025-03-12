@@ -5,6 +5,7 @@ import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,11 @@ public class FacilityController {
     private final FacilityService facilityService;
 
     @GetMapping
-    public List<FacilityDTO> getFacilities() {
-        return facilityService.getAllFacilities();
+    public List<FacilityDTO> getFacilities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return facilityService.getAllFacilities(PageRequest.of(page, size));
     }
 
     @GetMapping("/{facilityName}")

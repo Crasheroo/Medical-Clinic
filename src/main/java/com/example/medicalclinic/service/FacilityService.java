@@ -1,6 +1,5 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.dto.DoctorDTO;
 import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.FacilityMapper;
@@ -10,13 +9,14 @@ import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -25,8 +25,10 @@ public class FacilityService {
     private final DoctorRepository doctorRepository;
     private final FacilityMapper facilityMapper;
 
-    public List<FacilityDTO> getAllFacilities() {
-        return facilityMapper.listToDto(facilityRepository.findAll());
+    public List<FacilityDTO> getAllFacilities(Pageable pageable) {
+        return facilityRepository.findAll(pageable).stream()
+                .map(facilityMapper::toDto)
+                .toList();
     }
 
     public Facility getFacilityByName(String facilityName) {

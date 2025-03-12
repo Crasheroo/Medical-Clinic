@@ -6,6 +6,7 @@ import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.dto.PatientDTO;
 import com.example.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
 
-    public List<PatientDTO> getAllPatients() {
-        return patientRepository.findAll().stream()
+    public List<PatientDTO> getAllPatients(Pageable pageable) {
+        return patientRepository.findAll(pageable).stream()
                 .map(patientMapper::toDTO)
                 .toList();
     }
