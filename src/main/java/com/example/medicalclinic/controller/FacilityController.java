@@ -22,7 +22,6 @@ public class FacilityController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-
         return facilityService.getAllFacilities(PageRequest.of(page, size));
     }
 
