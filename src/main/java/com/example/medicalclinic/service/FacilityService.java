@@ -73,7 +73,7 @@ public class FacilityService {
                 .postcode(request.getPostcode())
                 .street(request.getStreet())
                 .buildingNumber(request.getBuildingNumber())
-                .doctors(doctors) // Ustawienie lekarzy w placówce
+                .doctors(doctors)
                 .build();
 
         doctors.forEach(doctor -> doctor.getFacilities().add(facility));
