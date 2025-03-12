@@ -57,6 +57,16 @@ public class FacilityService {
 
     @Transactional
     public FacilityDTO saveFacilityWithDoctors(FacilityRequestDTO request) {
+        Facility facility = facilityRepository.findByFacilityName(request.getFacilityName())
+                .orElseGet(() -> Facility.builder()
+                        .facilityName(request.getFacilityName())
+                        .city(request.getCity())
+                        .postcode(request.getPostcode())
+                        .street(request.getStreet())
+                        .buildingNumber(request.getBuildingNumber())
+                        .doctors(new HashSet<>())
+                        .build());
+
         Set<Doctor> doctors = request.getDoctors().stream()
                 .map(doctorDTO -> doctorRepository.findByEmail(doctorDTO.getEmail())
                         .orElseGet(() -> doctorRepository.save(
@@ -67,16 +77,8 @@ public class FacilityService {
                         )))
                 .collect(Collectors.toSet());
 
-        Facility facility = Facility.builder()
-                .facilityName(request.getFacilityName())
-                .city(request.getCity())
-                .postcode(request.getPostcode())
-                .street(request.getStreet())
-                .buildingNumber(request.getBuildingNumber())
-                .doctors(doctors)
-                .build();
-
         doctors.forEach(doctor -> doctor.getFacilities().add(facility));
+        facility.getDoctors().addAll(doctors);
 
         Facility savedFacility = facilityRepository.save(facility);
 
@@ -118,5 +120,4 @@ public class FacilityService {
                 .map(facilityMapper::toDto)
                 .toList();
     }
-
 }
