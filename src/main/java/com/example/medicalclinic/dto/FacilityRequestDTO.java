@@ -12,5 +12,5 @@ public class FacilityRequestDTO {
     private String postcode;
     private String street;
     private String buildingNumber;
-    private Set<Doctor> doctors;
+    private Set<DoctorDTO> doctors;
 }

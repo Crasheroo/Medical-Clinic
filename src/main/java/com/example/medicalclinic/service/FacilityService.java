@@ -1,5 +1,6 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.dto.DoctorDTO;
 import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.FacilityMapper;
@@ -57,7 +58,29 @@ public class FacilityService {
 
     @Transactional
     public FacilityDTO saveFacilityWithDoctors(FacilityRequestDTO request) {
-        Facility facility = facilityRepository.findByFacilityName(request.getFacilityName())
+        Facility facility = prepareFacility(request);
+        assignDoctorsToFacility(facility, request.getDoctors());
+        Facility savedFacility = facilityRepository.save(facility);
+        return facilityMapper.toDto(savedFacility);
+    }
+
+    @Transactional
+    public List<FacilityDTO> saveFacilitiesWithDoctors(List<FacilityRequestDTO> requests) {
+        List<Facility> facilities = requests.stream()
+                .map(request -> {
+                    Facility facility = prepareFacility(request);
+                    assignDoctorsToFacility(facility, request.getDoctors());
+                    return facility;
+                })
+                .toList();
+
+        return facilityRepository.saveAll(facilities).stream()
+                .map(facilityMapper::toDto)
+                .toList();
+    }
+
+    private Facility prepareFacility(FacilityRequestDTO request) {
+        return facilityRepository.findByFacilityName(request.getFacilityName())
                 .orElseGet(() -> Facility.builder()
                         .facilityName(request.getFacilityName())
                         .city(request.getCity())
@@ -66,8 +89,10 @@ public class FacilityService {
                         .buildingNumber(request.getBuildingNumber())
                         .doctors(new HashSet<>())
                         .build());
+    }
 
-        Set<Doctor> doctors = request.getDoctors().stream()
+    private void assignDoctorsToFacility(Facility facility, Set<DoctorDTO> doctorDTOs) {
+        Set<Doctor> doctors = doctorDTOs.stream()
                 .map(doctorDTO -> doctorRepository.findByEmail(doctorDTO.getEmail())
                         .orElseGet(() -> doctorRepository.save(
                                 Doctor.builder()
@@ -79,45 +104,5 @@ public class FacilityService {
 
         doctors.forEach(doctor -> doctor.getFacilities().add(facility));
         facility.getDoctors().addAll(doctors);
-
-        Facility savedFacility = facilityRepository.save(facility);
-
-        return facilityMapper.toDto(savedFacility);
-    }
-
-    @Transactional
-    public List<FacilityDTO> saveFacilitiesWithDoctors(List<FacilityRequestDTO> requests) {
-        List<Facility> facilities = requests.stream()
-                .map(request -> {
-                    Facility facility = facilityRepository.findByFacilityName(request.getFacilityName())
-                            .orElseGet(() -> Facility.builder()
-                                    .facilityName(request.getFacilityName())
-                                    .city(request.getCity())
-                                    .postcode(request.getPostcode())
-                                    .street(request.getStreet())
-                                    .buildingNumber(request.getBuildingNumber())
-                                    .doctors(new HashSet<>())
-                                    .build());
-
-                    Set<Doctor> doctors = request.getDoctors().stream()
-                            .map(doctorDto -> doctorRepository.findByEmail(doctorDto.getEmail())
-                                    .orElseGet(() -> doctorRepository.save(
-                                            Doctor.builder()
-                                                    .email(doctorDto.getEmail())
-                                                    .facilities(new HashSet<>())
-                                                    .build()
-                                    )))
-                            .collect(Collectors.toSet());
-
-                    doctors.forEach(doctor -> doctor.getFacilities().add(facility));
-                    facility.getDoctors().addAll(doctors);
-
-                    return facility;
-                })
-                .toList();
-
-        return facilityRepository.saveAll(facilities).stream()
-                .map(facilityMapper::toDto)
-                .toList();
     }
 }
