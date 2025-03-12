@@ -1,5 +1,6 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.dto.DoctorDTO;
 import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.*;
 import com.example.medicalclinic.service.DoctorService;

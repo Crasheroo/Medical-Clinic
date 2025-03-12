@@ -3,7 +3,7 @@ package com.example.medicalclinic.service;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.Patient;
-import com.example.medicalclinic.model.PatientDTO;
+import com.example.medicalclinic.dto.PatientDTO;
 import com.example.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

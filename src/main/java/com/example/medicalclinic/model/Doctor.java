@@ -1,5 +1,6 @@
 package com.example.medicalclinic.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -17,12 +18,13 @@ public class Doctor {
     private Long id;
     private String email;
     private String password;
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "doctor_facility",
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
+    @JsonBackReference
     private Set<Facility> facilities = new HashSet<>();
 
     public void updateFrom(Doctor other) {

@@ -1,5 +1,6 @@
 package com.example.medicalclinic.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -21,7 +22,7 @@ public class Facility {
     private String postcode;
     private String street;
     private String buildingNumber;
-    @ManyToMany(mappedBy = "facilities")
+    @ManyToMany(mappedBy = "facilities", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Doctor> doctors = new HashSet<>();
 
     public void updateFrom(Facility updatedFacility) {

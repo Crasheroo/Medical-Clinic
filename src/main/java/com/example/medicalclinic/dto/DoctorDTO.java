@@ -1,4 +1,4 @@
-package com.example.medicalclinic.model;
+package com.example.medicalclinic.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

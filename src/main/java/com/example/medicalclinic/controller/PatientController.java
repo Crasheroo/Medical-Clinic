@@ -3,7 +3,7 @@ package com.example.medicalclinic.controller;
 import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
-import com.example.medicalclinic.model.PatientDTO;
+import com.example.medicalclinic.dto.PatientDTO;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

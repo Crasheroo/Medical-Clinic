@@ -1,11 +1,10 @@
 package com.example.medicalclinic.mapper;
 
 import com.example.medicalclinic.model.Patient;
-import com.example.medicalclinic.model.PatientDTO;
+import com.example.medicalclinic.dto.PatientDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 

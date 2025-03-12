@@ -4,7 +4,7 @@ import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.Doctor;
-import com.example.medicalclinic.model.DoctorDTO;
+import com.example.medicalclinic.dto.DoctorDTO;
 import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
@@ -105,4 +105,6 @@ public class DoctorService {
             existingDoctor.setEmail(newEmail);
         }
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.model.Facility;
+import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +17,7 @@ public class FacilityController {
     private final FacilityService facilityService;
 
     @GetMapping
-    public List<Facility> getFacilities() {
+    public List<FacilityDTO> getFacilities() {
         return facilityService.getAllFacilities();
     }
 
@@ -39,5 +41,15 @@ public class FacilityController {
     @PutMapping("/{facilityName}")
     public Facility editFacility(@PathVariable String facilityName, @RequestBody Facility facility) {
         return facilityService.updateByName(facilityName, facility);
+    }
+
+    @PostMapping("/with-doctors")
+    public FacilityDTO createFacilityWithDoctors(@RequestBody FacilityRequestDTO request) {
+        return facilityService.saveFacilityWithDoctors(request);
+    }
+
+    @PostMapping("/bulk")
+    public List<FacilityDTO> createFacilitiesWithDoctors(@RequestBody List<FacilityRequestDTO> requests) {
+        return facilityService.saveFacilitiesWithDoctors(requests);
     }
 }
