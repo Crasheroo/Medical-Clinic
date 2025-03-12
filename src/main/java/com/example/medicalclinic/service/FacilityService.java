@@ -59,7 +59,7 @@ public class FacilityService {
     @Transactional
     public FacilityDTO saveFacilityWithDoctors(FacilityRequestDTO request) {
         Facility facility = prepareFacility(request);
-        assignDoctorsToFacility(facility, request.getDoctors());
+        assignDoctorsToFacility(facility, request.getDoctorIds());
         Facility savedFacility = facilityRepository.save(facility);
         return facilityMapper.toDto(savedFacility);
     }
@@ -69,14 +69,12 @@ public class FacilityService {
         List<Facility> facilities = requests.stream()
                 .map(request -> {
                     Facility facility = prepareFacility(request);
-                    assignDoctorsToFacility(facility, request.getDoctors());
+                    assignDoctorsToFacility(facility, request.getDoctorIds());
                     return facility;
                 })
                 .toList();
 
-        return facilityRepository.saveAll(facilities).stream()
-                .map(facilityMapper::toDto)
-                .toList();
+        return facilityMapper.listToDto(facilityRepository.saveAll(facilities));
     }
 
     private Facility prepareFacility(FacilityRequestDTO request) {
@@ -91,18 +89,15 @@ public class FacilityService {
                         .build());
     }
 
-    private void assignDoctorsToFacility(Facility facility, Set<DoctorDTO> doctorDTOs) {
-        Set<Doctor> doctors = doctorDTOs.stream()
-                .map(doctorDTO -> doctorRepository.findByEmail(doctorDTO.getEmail())
-                        .orElseGet(() -> doctorRepository.save(
-                                Doctor.builder()
-                                        .email(doctorDTO.getEmail())
-                                        .facilities(new HashSet<>())
-                                        .build()
-                        )))
-                .collect(Collectors.toSet());
+    private void assignDoctorsToFacility(Facility facility, Set<Long> doctorIds) {
+        if (doctorIds == null || doctorIds.isEmpty()) {
+            return;
+        }
 
-        doctors.forEach(doctor -> doctor.getFacilities().add(facility));
-        facility.getDoctors().addAll(doctors);
+        List<Doctor> existingDoctors = doctorRepository.findAllById(doctorIds);
+
+        existingDoctors.forEach(doctor -> doctor.getFacilities().add(facility));
+        facility.getDoctors().addAll(existingDoctors);
     }
+
 }
