@@ -1,11 +1,13 @@
 package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.dto.FacilityDTO;
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +20,8 @@ public class FacilityController {
     private final FacilityService facilityService;
 
     @GetMapping
-    public List<FacilityDTO> getFacilities(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return facilityService.getAllFacilities(PageRequest.of(page, size));
+    public PageableContentDTO<FacilityDTO> getFacilities(Pageable pageable) {
+        return facilityService.getAllFacilities(pageable);
     }
 
     @GetMapping("/{facilityName}")

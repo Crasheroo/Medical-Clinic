@@ -1,6 +1,8 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.dto.DoctorRequestDTO;
 import com.example.medicalclinic.dto.FacilityDTO;
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.Doctor;
@@ -9,6 +11,8 @@ import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FacilityService {
@@ -24,10 +29,18 @@ public class FacilityService {
     private final DoctorRepository doctorRepository;
     private final FacilityMapper facilityMapper;
 
-    public List<FacilityDTO> getAllFacilities(Pageable pageable) {
-        return facilityRepository.findAll(pageable).stream()
+    public PageableContentDTO<FacilityDTO> getAllFacilities(Pageable pageable) {
+        Page<Facility> facilityPage = facilityRepository.findAll(pageable);
+        List<FacilityDTO> facilityDTOS = facilityPage.getContent().stream()
                 .map(facilityMapper::toDto)
                 .toList();
+
+        return new PageableContentDTO<>(
+                facilityPage.getTotalPages(),
+                facilityPage.getTotalElements(),
+                facilityPage.getNumber(),
+                facilityDTOS
+        );
     }
 
     public Facility getFacilityByName(String facilityName) {
@@ -60,7 +73,7 @@ public class FacilityService {
     @Transactional
     public FacilityDTO saveFacilityWithDoctors(FacilityRequestDTO request) {
         Facility facility = prepareFacility(request);
-        assignDoctorsToFacility(facility, request.getDoctorIds());
+        assignDoctorsToFacility(facility, request.getDoctors());
         Facility savedFacility = facilityRepository.save(facility);
         return facilityMapper.toDto(savedFacility);
     }
@@ -70,7 +83,7 @@ public class FacilityService {
         List<Facility> facilities = requests.stream()
                 .map(request -> {
                     Facility facility = prepareFacility(request);
-                    assignDoctorsToFacility(facility, request.getDoctorIds());
+                    assignDoctorsToFacility(facility, request.getDoctors());
                     return facility;
                 })
                 .toList();
@@ -90,15 +103,24 @@ public class FacilityService {
                         .build());
     }
 
-    private void assignDoctorsToFacility(Facility facility, Set<Long> doctorIds) {
-        if (doctorIds == null || doctorIds.isEmpty()) {
-            return;
+    private void assignDoctorsToFacility(Facility facility, List<DoctorRequestDTO> doctorRequests) {
+        Set<Doctor> doctors = new HashSet<>();
+
+        if (doctorRequests != null && !doctorRequests.isEmpty()) {
+            for (DoctorRequestDTO doctorRequest : doctorRequests) {
+                Doctor doctor = doctorRepository.findByEmail(doctorRequest.getEmail())
+                        .orElseGet(() -> {
+                            Doctor newDoctor = Doctor.builder()
+                                    .email(doctorRequest.getEmail())
+                                    .password(doctorRequest.getPassword())
+                                    .facilities(new HashSet<>())
+                                    .build();
+                            return doctorRepository.save(newDoctor);
+                        });
+                doctors.add(doctor);
+            }
         }
-
-        List<Doctor> existingDoctors = doctorRepository.findAllById(doctorIds);
-
-        existingDoctors.forEach(doctor -> doctor.getFacilities().add(facility));
-        facility.getDoctors().addAll(existingDoctors);
+        doctors.forEach(doctor -> doctor.getFacilities().add(facility));
+        facility.getDoctors().addAll(doctors);
     }
-
 }

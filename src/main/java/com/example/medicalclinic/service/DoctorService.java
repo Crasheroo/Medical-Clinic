@@ -1,5 +1,6 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.DoctorMapper;
@@ -9,6 +10,7 @@ import com.example.medicalclinic.model.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,18 @@ public class DoctorService {
     private final FacilityRepository facilityRepository;
     private final DoctorMapper doctorMapper;
 
-    public List<DoctorDTO> getAllDoctors(Pageable pageable) {
-        return doctorRepository.findAll(pageable).stream()
+    public PageableContentDTO<DoctorDTO> getAllDoctors(Pageable pageable) {
+        Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
+        List<DoctorDTO> doctorDTOS = doctorPage.getContent().stream()
                 .map(doctorMapper::toDTO)
                 .toList();
+
+        return new PageableContentDTO<>(
+                doctorPage.getTotalPages(),
+                doctorPage.getTotalElements(),
+                doctorPage.getNumber(),
+                doctorDTOS
+        );
     }
 
     public DoctorDTO getDoctorByEmail(String email) {

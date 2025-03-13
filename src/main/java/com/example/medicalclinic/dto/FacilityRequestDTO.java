@@ -3,6 +3,7 @@ package com.example.medicalclinic.dto;
 import com.example.medicalclinic.model.Doctor;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -13,4 +14,5 @@ public class FacilityRequestDTO {
     private String street;
     private String buildingNumber;
     private Set<Long> doctorIds;
+    private List<DoctorRequestDTO> doctors;
 }

@@ -1,6 +1,7 @@
 package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.dto.DoctorDTO;
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.*;
 import com.example.medicalclinic.service.DoctorService;
@@ -20,11 +21,8 @@ public class DoctorController {
     private final DoctorMapper doctorMapper;
 
     @GetMapping
-    public List<DoctorDTO> getDoctors(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return doctorService.getAllDoctors(PageRequest.of(page, size));
+    public PageableContentDTO<DoctorDTO> getDoctors(Pageable pageable) {
+        return doctorService.getAllDoctors(pageable);
     }
 
     @GetMapping("/{email}")

@@ -1,5 +1,6 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.Patient;
@@ -7,6 +8,7 @@ import com.example.medicalclinic.dto.PatientDTO;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +22,8 @@ public class PatientController {
     private final PatientMapper patientMapper;
 
     @GetMapping
-    public List<PatientDTO> getPatientsDTO(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return patientService.getAllPatients(PageRequest.of(page, size));
+    public PageableContentDTO<PatientDTO> getPatientsDTO(Pageable pageable) {
+        return patientService.getAllPatients(pageable);
     }
 
     @GetMapping("/{email}")

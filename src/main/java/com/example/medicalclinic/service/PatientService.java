@@ -1,11 +1,13 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.Patient;
 import com.example.medicalclinic.dto.PatientDTO;
 import com.example.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,18 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
 
-    public List<PatientDTO> getAllPatients(Pageable pageable) {
-        return patientRepository.findAll(pageable).stream()
+    public PageableContentDTO<PatientDTO> getAllPatients(Pageable pageable) {
+        Page<Patient> patientPage = patientRepository.findAll(pageable);
+        List<PatientDTO> patientDTOS = patientPage.getContent().stream()
                 .map(patientMapper::toDTO)
                 .toList();
+
+        return new PageableContentDTO<>(
+                patientPage.getTotalPages(),
+                patientPage.getTotalElements(),
+                patientPage.getNumber(),
+                patientDTOS
+        );
     }
 
     public PatientDTO getPatientByEmail(String email) {
@@ -30,6 +40,10 @@ public class PatientService {
     public Patient addPatient(Patient patient) {
         if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
             throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
+        }
+        if (patientRepository.findByIdCardNo(patient.getIdCardNo()).isPresent()) {
+            throw new PatientException("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists");
+
         }
         return patientRepository.save(patient);
     }
