@@ -30,12 +30,7 @@ public class DoctorService {
                 .map(doctorMapper::toDTO)
                 .toList();
 
-        return new PageableContentDTO<>(
-                doctorPage.getTotalPages(),
-                doctorPage.getTotalElements(),
-                doctorPage.getNumber(),
-                doctorDTOS
-        );
+        return PageableContentDTO.from(doctorPage, doctorDTOS);
     }
 
     public DoctorDTO getDoctorByEmail(String email) {

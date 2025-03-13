@@ -35,12 +35,7 @@ public class FacilityService {
                 .map(facilityMapper::toDto)
                 .toList();
 
-        return new PageableContentDTO<>(
-                facilityPage.getTotalPages(),
-                facilityPage.getTotalElements(),
-                facilityPage.getNumber(),
-                facilityDTOS
-        );
+        return PageableContentDTO.from(facilityPage, facilityDTOS);
     }
 
     public Facility getFacilityByName(String facilityName) {

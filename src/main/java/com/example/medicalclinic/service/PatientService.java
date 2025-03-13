@@ -25,12 +25,7 @@ public class PatientService {
                 .map(patientMapper::toDTO)
                 .toList();
 
-        return new PageableContentDTO<>(
-                patientPage.getTotalPages(),
-                patientPage.getTotalElements(),
-                patientPage.getNumber(),
-                patientDTOS
-        );
+        return PageableContentDTO.from(patientPage, patientDTOS);
     }
 
     public PatientDTO getPatientByEmail(String email) {

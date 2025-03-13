@@ -12,7 +12,7 @@ public record PageableContentDTO<T>(
         int currentPage,
         List<T> content
 ) {
-    public static <T> PageableContentDTO <T> from(Page<T> page, List<T> content) {
+    public static <T, R> PageableContentDTO<R> from(Page<T> page, List<R> content) {
         return new PageableContentDTO<>(
                 page.getTotalPages(),
                 page.getTotalElements(),
