@@ -15,10 +15,6 @@ public interface DoctorMapper {
     @Mapping(target = "facilityIds", source = "facilities", qualifiedByName = "mapFacilityIds")
     DoctorDTO toDTO(Doctor doctor);
 
-    List<DoctorDTO> toDTOList(List<Doctor> doctors);
-
-    List<Doctor> toEntityList(List<DoctorDTO> doctorDTOs);
-
     @Named("mapFacilityIds")
     static List<Long> mapFacilityIds(Set<Facility> facilities) {
         if (facilities == null) {
