@@ -1,7 +1,6 @@
 package com.example.medicalclinic.model;
 
-import com.example.medicalclinic.dto.FacilityRequestDTO;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.medicalclinic.dto.CreateFacilityRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +34,7 @@ public class Facility {
         Optional.ofNullable(other.getBuildingNumber()).ifPresent(newEmail -> this.buildingNumber = newEmail);
     }
 
-    public static Facility from(FacilityRequestDTO request) {
+    public static Facility from(CreateFacilityRequest request) {
         return Facility.builder()
                 .facilityName(request.getFacilityName())
                 .city(request.getCity())

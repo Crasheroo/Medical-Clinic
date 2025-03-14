@@ -4,10 +4,9 @@ import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.Facility;
-import com.example.medicalclinic.dto.FacilityRequestDTO;
+import com.example.medicalclinic.dto.CreateFacilityRequest;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +43,7 @@ public class FacilityController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public List<FacilityDTO> createFacilitiesWithDoctors(@RequestBody List<FacilityRequestDTO> requests) {
+    public List<FacilityDTO> createFacilitiesWithDoctors(@RequestBody List<CreateFacilityRequest> requests) {
         return facilityService.saveFacilitiesWithDoctors(requests);
     }
 }

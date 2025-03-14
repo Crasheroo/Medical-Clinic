@@ -1,7 +1,6 @@
 package com.example.medicalclinic.model;
 
-import com.example.medicalclinic.dto.DoctorRequestDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.example.medicalclinic.dto.CreateDoctorRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +35,7 @@ public class Doctor {
                 .ifPresent(newEmail -> this.email = newEmail);
     }
 
-    public static Doctor from(DoctorRequestDTO request) {
+    public static Doctor from(CreateDoctorRequest request) {
         return Doctor.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
