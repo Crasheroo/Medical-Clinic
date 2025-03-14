@@ -1,5 +1,6 @@
 package com.example.medicalclinic.model;
 
+import com.example.medicalclinic.dto.FacilityRequestDTO;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,22 +27,23 @@ public class Facility {
     @ManyToMany(mappedBy = "facilities", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Doctor> doctors = new HashSet<>();
 
-    public void updateFrom(Facility updatedFacility) {
-        if (updatedFacility.getFacilityName() != null) {
-            this.setFacilityName(updatedFacility.getFacilityName());
-        }
-        if (updatedFacility.getCity() != null) {
-            this.setCity(updatedFacility.getCity());
-        }
-        if (updatedFacility.getPostcode() != null) {
-            this.setPostcode(updatedFacility.getPostcode());
-        }
-        if (updatedFacility.getStreet() != null) {
-            this.setStreet(updatedFacility.getStreet());
-        }
-        if (updatedFacility.getBuildingNumber() != null) {
-            this.setBuildingNumber(updatedFacility.getBuildingNumber());
-        }
+    public void updateFrom(Facility other) {
+        Optional.ofNullable(other.getFacilityName()).ifPresent(newEmail -> this.facilityName = newEmail);
+        Optional.ofNullable(other.getCity()).ifPresent(newEmail -> this.city = newEmail);
+        Optional.ofNullable(other.getPostcode()).ifPresent(newEmail -> this.postcode = newEmail);
+        Optional.ofNullable(other.getStreet()).ifPresent(newEmail -> this.street = newEmail);
+        Optional.ofNullable(other.getBuildingNumber()).ifPresent(newEmail -> this.buildingNumber = newEmail);
+    }
+
+    public static Facility from(FacilityRequestDTO request) {
+        return Facility.builder()
+                .facilityName(request.getFacilityName())
+                .city(request.getCity())
+                .postcode(request.getPostcode())
+                .street(request.getStreet())
+                .buildingNumber(request.getBuildingNumber())
+                .doctors(new HashSet<>())
+                .build();
     }
 
     @Override

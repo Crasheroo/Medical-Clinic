@@ -1,8 +1,10 @@
 package com.example.medicalclinic.model;
 
+import com.example.medicalclinic.dto.DoctorRequestDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.*;
 
 @Getter
@@ -24,27 +26,30 @@ public class Doctor {
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
-    @JsonBackReference
     private Set<Facility> facilities = new HashSet<>();
 
     public void updateFrom(Doctor other) {
-        if (other.getPassword() != null) {
-            this.password = other.getPassword();
-        }
-        if (other.getEmail() != null) {
-            this.email = other.getEmail();
-        }
+        Optional.ofNullable(other.getPassword())
+                .ifPresent(newPassword -> this.password = newPassword);
+
+        Optional.ofNullable(other.getEmail())
+                .ifPresent(newEmail -> this.email = newEmail);
+    }
+
+    public static Doctor from(DoctorRequestDTO request) {
+        return Doctor.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .facilities(new HashSet<>())
+                .build();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-
         if (!(o instanceof Doctor))
             return false;
-
         Doctor other = (Doctor) o;
-
         return id != null &&
                 id.equals(other.getId());
     }

@@ -17,9 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -88,32 +87,17 @@ public class FacilityService {
 
     private Facility prepareFacility(FacilityRequestDTO request) {
         return facilityRepository.findByFacilityName(request.getFacilityName())
-                .orElseGet(() -> Facility.builder()
-                        .facilityName(request.getFacilityName())
-                        .city(request.getCity())
-                        .postcode(request.getPostcode())
-                        .street(request.getStreet())
-                        .buildingNumber(request.getBuildingNumber())
-                        .doctors(new HashSet<>())
-                        .build());
+                .orElseGet(() -> Facility.from(request));
     }
 
     private void assignDoctorsToFacility(Facility facility, List<DoctorRequestDTO> doctorRequests) {
-        Set<Doctor> doctors = new HashSet<>();
+        Set<Doctor> doctors = Optional.ofNullable(doctorRequests)
+                .orElseGet(Collections::emptyList)
+                .stream()
+                .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.getEmail())
+                        .orElseGet(() -> Doctor.from(doctorRequest)))
+                .collect(Collectors.toSet());
 
-        if (doctorRequests != null && !doctorRequests.isEmpty()) {
-            for (DoctorRequestDTO doctorRequest : doctorRequests) {
-                Doctor doctor = doctorRepository.findByEmail(doctorRequest.getEmail())
-                        .orElseGet(() ->
-                                Doctor.builder()
-                                        .email(doctorRequest.getEmail())
-                                        .password(doctorRequest.getPassword())
-                                        .facilities(new HashSet<>())
-                                        .build()
-                        );
-                doctors.add(doctor);
-            }
-        }
         doctors.forEach(doctor -> doctor.getFacilities().add(facility));
         facility.getDoctors().addAll(doctors);
     }

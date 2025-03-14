@@ -38,13 +38,13 @@ public class DoctorController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public DoctorDTO addDoctor(@RequestBody Doctor doctor) {
-        return doctorMapper.toDTO(doctorService.addDoctor(doctor));
+    public DoctorDTO addDoctor(@RequestBody DoctorDTO doctor) {
+        return doctorService.addDoctor(doctorMapper.toEntity(doctor));
     }
 
     @PutMapping("/{email}")
-    public DoctorDTO editDoctor(@PathVariable String email, @RequestBody Doctor doctor) {
-        return doctorService.editDoctorByEmail(email, doctor);
+    public DoctorDTO editDoctor(@PathVariable String email, @RequestBody DoctorDTO doctor) {
+        return doctorService.editDoctorByEmail(email, doctorMapper.toEntity(doctor));
     }
 
     @PatchMapping("/{email}/password")

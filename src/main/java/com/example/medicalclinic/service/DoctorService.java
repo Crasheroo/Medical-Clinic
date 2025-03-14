@@ -38,11 +38,11 @@ public class DoctorService {
     }
 
     @Transactional
-    public Doctor addDoctor(Doctor doctor) {
+    public DoctorDTO addDoctor(Doctor doctor) {
         if (doctorRepository.findByEmail(doctor.getEmail()).isPresent()) {
             throw new DoctorException("Doctor with email: " + doctor.getEmail() + " already exists");
         }
-        return doctorRepository.save(doctor);
+        return doctorMapper.toDTO(doctorRepository.save(doctor));
     }
 
     @Transactional
@@ -104,7 +104,7 @@ public class DoctorService {
 
     private void updateEmailIfChanged(Doctor existingDoctor, Doctor updatedDoctor) {
         String newEmail = updatedDoctor.getEmail();
-        if (newEmail != null && !newEmail.equals(existingDoctor.getEmail())) {
+        if (isEmailChanged(existingDoctor, newEmail)) {
             if (doctorRepository.findByEmail(newEmail).isPresent()) {
                 throw new DoctorException("Email " + newEmail + " is already in use.");
             }
@@ -112,5 +112,7 @@ public class DoctorService {
         }
     }
 
-
+    private boolean isEmailChanged(Doctor doctor, String newEmail) {
+        return newEmail != null && !newEmail.equals(doctor.getEmail());
+    }
 }

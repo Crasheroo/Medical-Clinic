@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public interface FacilityMapper {
     @Mapping(target = "doctorIds", source = "doctors", qualifiedByName = "mapDoctorIds")
     FacilityDTO toDto(Facility facility);
-
+    Facility toEntity(FacilityDTO facilityDTO);
     List<FacilityDTO> listToDto(List<Facility> facilities);
 
     @Named("mapDoctorIds")

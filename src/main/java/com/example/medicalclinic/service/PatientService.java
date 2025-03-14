@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -66,12 +67,13 @@ public class PatientService {
     }
 
     private void updateEmailIfChanged(Patient existingPatient, Patient updatedPatient) {
-        String newEmail = updatedPatient.getEmail();
-        if (newEmail != null && !newEmail.equals(existingPatient.getEmail())) {
-            if (patientRepository.findByEmail(newEmail).isPresent()) {
-                throw new PatientException("Email " + newEmail + " is already in use.");
-            }
-            existingPatient.setEmail(newEmail);
-        }
+        Optional.ofNullable(updatedPatient.getEmail())
+                .filter(newEmail -> !newEmail.equals(existingPatient.getEmail()))
+                .ifPresent(newEmail -> {
+                    if (patientRepository.findByEmail(newEmail).isPresent()) {
+                        throw new PatientException("Email " + newEmail + " is already in use.");
+                    }
+                    existingPatient.setEmail(newEmail);
+                });
     }
 }
