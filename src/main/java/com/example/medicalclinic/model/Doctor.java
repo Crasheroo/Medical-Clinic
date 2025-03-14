@@ -1,6 +1,5 @@
 package com.example.medicalclinic.model;
 
-import com.example.medicalclinic.dto.CreateDoctorRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,8 +36,8 @@ public class Doctor {
 
     public static Doctor from(CreateDoctorRequest request) {
         return Doctor.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
+                .email(request.email())
+                .password(request.password())
                 .facilities(new HashSet<>())
                 .build();
     }

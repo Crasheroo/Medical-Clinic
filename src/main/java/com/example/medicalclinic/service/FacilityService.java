@@ -1,13 +1,13 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.dto.CreateDoctorRequest;
+import com.example.medicalclinic.model.CreateDoctorRequest;
 import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.Doctor;
 import com.example.medicalclinic.model.Facility;
-import com.example.medicalclinic.dto.CreateFacilityRequest;
+import com.example.medicalclinic.model.CreateFacilityRequest;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +67,7 @@ public class FacilityService {
     @Transactional
     public FacilityDTO saveFacilityWithDoctors(CreateFacilityRequest request) {
         Facility facility = prepareFacility(request);
-        assignDoctorsToFacility(facility, request.getDoctors());
+        assignDoctorsToFacility(facility, request.doctors());
         Facility savedFacility = facilityRepository.save(facility);
         return facilityMapper.toDto(savedFacility);
     }
@@ -77,7 +77,7 @@ public class FacilityService {
         List<Facility> facilities = requests.stream()
                 .map(request -> {
                     Facility facility = prepareFacility(request);
-                    assignDoctorsToFacility(facility, request.getDoctors());
+                    assignDoctorsToFacility(facility, request.doctors());
                     return facility;
                 })
                 .toList();
@@ -86,7 +86,7 @@ public class FacilityService {
     }
 
     private Facility prepareFacility(CreateFacilityRequest request) {
-        return facilityRepository.findByFacilityName(request.getFacilityName())
+        return facilityRepository.findByFacilityName(request.facilityName())
                 .orElseGet(() -> Facility.from(request));
     }
 
@@ -94,7 +94,7 @@ public class FacilityService {
         Set<Doctor> doctors = Optional.ofNullable(doctorRequests)
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.getEmail())
+                .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.email())
                         .orElseGet(() -> Doctor.from(doctorRequest)))
                 .collect(Collectors.toSet());
 

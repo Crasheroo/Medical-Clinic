@@ -1,6 +1,5 @@
 package com.example.medicalclinic.model;
 
-import com.example.medicalclinic.dto.CreateFacilityRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,11 +35,11 @@ public class Facility {
 
     public static Facility from(CreateFacilityRequest request) {
         return Facility.builder()
-                .facilityName(request.getFacilityName())
-                .city(request.getCity())
-                .postcode(request.getPostcode())
-                .street(request.getStreet())
-                .buildingNumber(request.getBuildingNumber())
+                .facilityName(request.facilityName())
+                .city(request.city())
+                .postcode(request.postcode())
+                .street(request.street())
+                .buildingNumber(request.buildingNumber())
                 .doctors(new HashSet<>())
                 .build();
     }

@@ -4,7 +4,7 @@ import com.example.medicalclinic.dto.FacilityDTO;
 import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.Facility;
-import com.example.medicalclinic.dto.CreateFacilityRequest;
+import com.example.medicalclinic.model.CreateFacilityRequest;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

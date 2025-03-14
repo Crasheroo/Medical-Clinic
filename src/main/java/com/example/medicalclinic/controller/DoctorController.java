@@ -1,17 +1,15 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.dto.DoctorDTO;
 import com.example.medicalclinic.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.*;
 import com.example.medicalclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
