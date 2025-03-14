@@ -50,12 +50,18 @@ public class Patient {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Patient patient)) return false;
-        return Objects.equals(id, patient.id);
+
+        if (!(o instanceof Patient))
+            return false;
+
+        Patient other = (Patient) o;
+
+        return id != null &&
+                id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

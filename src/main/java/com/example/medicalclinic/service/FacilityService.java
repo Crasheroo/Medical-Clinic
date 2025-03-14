@@ -104,14 +104,13 @@ public class FacilityService {
         if (doctorRequests != null && !doctorRequests.isEmpty()) {
             for (DoctorRequestDTO doctorRequest : doctorRequests) {
                 Doctor doctor = doctorRepository.findByEmail(doctorRequest.getEmail())
-                        .orElseGet(() -> {
-                            Doctor newDoctor = Doctor.builder()
-                                    .email(doctorRequest.getEmail())
-                                    .password(doctorRequest.getPassword())
-                                    .facilities(new HashSet<>())
-                                    .build();
-                            return doctorRepository.save(newDoctor);
-                        });
+                        .orElseGet(() ->
+                                Doctor.builder()
+                                        .email(doctorRequest.getEmail())
+                                        .password(doctorRequest.getPassword())
+                                        .facilities(new HashSet<>())
+                                        .build()
+                        );
                 doctors.add(doctor);
             }
         }

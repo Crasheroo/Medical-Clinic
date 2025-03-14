@@ -13,6 +13,5 @@ public class FacilityRequestDTO {
     private String postcode;
     private String street;
     private String buildingNumber;
-    private Set<Long> doctorIds;
     private List<DoctorRequestDTO> doctors;
 }

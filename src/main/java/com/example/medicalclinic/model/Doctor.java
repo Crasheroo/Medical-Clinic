@@ -39,12 +39,18 @@ public class Doctor {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Doctor doctor)) return false;
-        return Objects.equals(id, doctor.id);
+
+        if (!(o instanceof Doctor))
+            return false;
+
+        Doctor other = (Doctor) o;
+
+        return id != null &&
+                id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

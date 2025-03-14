@@ -47,12 +47,18 @@ public class Facility {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Facility facility)) return false;
-        return Objects.equals(id, facility.id);
+
+        if (!(o instanceof Facility))
+            return false;
+
+        Facility other = (Facility) o;
+
+        return id != null &&
+                id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }
