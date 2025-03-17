@@ -65,22 +65,14 @@ public class FacilityService {
     }
 
     @Transactional
-    public FacilityDTO saveFacilityWithDoctors(CreateFacilityRequest request) {
-        Facility facility = prepareFacility(request);
-        assignDoctorsToFacility(facility, request.doctors());
-        Facility savedFacility = facilityRepository.save(facility);
-        return facilityMapper.toDto(savedFacility);
-    }
-
-    @Transactional
     public List<FacilityDTO> saveFacilitiesWithDoctors(List<CreateFacilityRequest> requests) {
-        List<Facility> facilities = requests.stream()
-                .map(request -> {
-                    Facility facility = prepareFacility(request);
-                    assignDoctorsToFacility(facility, request.doctors());
-                    return facility;
-                })
-                .toList();
+        List<Facility> facilities = new ArrayList<>();
+
+        requests.forEach(request -> {
+            Facility facility = prepareFacility(request);
+            assignDoctorsToFacility(facility, request.doctors());
+            facilities.add(facility);
+        });
 
         return facilityMapper.listToDto(facilityRepository.saveAll(facilities));
     }
