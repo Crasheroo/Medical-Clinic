@@ -1,4 +1,4 @@
-package com.example.medicalclinic.dto;
+package com.example.medicalclinic.model.dto;
 
 import lombok.*;
 

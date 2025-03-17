@@ -1,8 +1,6 @@
-package com.example.medicalclinic.dto;
+package com.example.medicalclinic.model.dto;
 
-import lombok.Builder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 

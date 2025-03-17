@@ -1,8 +1,8 @@
-package com.example.medicalclinic.mapper;
+package com.example.medicalclinic.model.mapper;
 
-import com.example.medicalclinic.model.Doctor;
-import com.example.medicalclinic.dto.DoctorDTO;
-import com.example.medicalclinic.model.Facility;
+import com.example.medicalclinic.model.entity.Doctor;
+import com.example.medicalclinic.model.dto.DoctorDTO;
+import com.example.medicalclinic.model.entity.Facility;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

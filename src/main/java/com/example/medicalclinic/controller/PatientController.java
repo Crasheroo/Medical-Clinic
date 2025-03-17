@@ -1,10 +1,10 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.dto.PageableContentDTO;
-import com.example.medicalclinic.mapper.PatientMapper;
+import com.example.medicalclinic.model.dto.PageableContentDTO;
+import com.example.medicalclinic.model.mapper.PatientMapper;
 import com.example.medicalclinic.model.ChangePasswordRequest;
-import com.example.medicalclinic.model.Patient;
-import com.example.medicalclinic.dto.PatientDTO;
+import com.example.medicalclinic.model.entity.Patient;
+import com.example.medicalclinic.model.dto.PatientDTO;
 import com.example.medicalclinic.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

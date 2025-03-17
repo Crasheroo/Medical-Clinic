@@ -1,12 +1,12 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.dto.PageableContentDTO;
+import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
-import com.example.medicalclinic.mapper.DoctorMapper;
-import com.example.medicalclinic.model.Doctor;
-import com.example.medicalclinic.dto.DoctorDTO;
-import com.example.medicalclinic.model.Facility;
+import com.example.medicalclinic.model.mapper.DoctorMapper;
+import com.example.medicalclinic.model.entity.Doctor;
+import com.example.medicalclinic.model.dto.DoctorDTO;
+import com.example.medicalclinic.model.entity.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;

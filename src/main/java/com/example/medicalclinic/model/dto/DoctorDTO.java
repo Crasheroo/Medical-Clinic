@@ -1,9 +1,8 @@
-package com.example.medicalclinic.dto;
+package com.example.medicalclinic.model.dto;
 
 import lombok.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor

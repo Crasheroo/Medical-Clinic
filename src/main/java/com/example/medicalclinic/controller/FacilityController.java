@@ -1,9 +1,9 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.dto.FacilityDTO;
-import com.example.medicalclinic.dto.PageableContentDTO;
-import com.example.medicalclinic.mapper.FacilityMapper;
-import com.example.medicalclinic.model.Facility;
+import com.example.medicalclinic.model.dto.FacilityDTO;
+import com.example.medicalclinic.model.dto.PageableContentDTO;
+import com.example.medicalclinic.model.mapper.FacilityMapper;
+import com.example.medicalclinic.model.entity.Facility;
 import com.example.medicalclinic.model.CreateFacilityRequest;
 import com.example.medicalclinic.service.FacilityService;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
-package com.example.medicalclinic.model;
+package com.example.medicalclinic.model.entity;
 
+import com.example.medicalclinic.model.CreateFacilityRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
