@@ -83,12 +83,15 @@ public class FacilityService {
     }
 
     private void assignDoctorsToFacility(Facility facility, List<CreateDoctorRequest> doctorRequests) {
-        Set<Doctor> doctors = Optional.ofNullable(doctorRequests)
+        Set<Doctor> doctors = new HashSet<>();
+
+        Optional.ofNullable(doctorRequests)
                 .orElseGet(Collections::emptyList)
-                .stream()
-                .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.email())
-                        .orElseGet(() -> Doctor.from(doctorRequest)))
-                .collect(Collectors.toSet());
+                .forEach(doctorRequest -> {
+                    Doctor doctor = doctorRepository.findByEmail(doctorRequest.email())
+                            .orElseGet(() -> Doctor.from(doctorRequest));
+                    doctors.add(doctor);
+                });
 
         doctors.forEach(doctor -> doctor.getFacilities().add(facility));
         facility.getDoctors().addAll(doctors);
