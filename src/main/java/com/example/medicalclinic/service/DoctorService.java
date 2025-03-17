@@ -3,7 +3,7 @@ package com.example.medicalclinic.service;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
-import com.example.medicalclinic.model.mapper.DoctorMapper;
+import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.entity.Facility;

@@ -2,7 +2,7 @@ package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.PatientException;
-import com.example.medicalclinic.model.mapper.PatientMapper;
+import com.example.medicalclinic.mapper.PatientMapper;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.model.dto.PatientDTO;
 import com.example.medicalclinic.repository.PatientRepository;

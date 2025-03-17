@@ -3,7 +3,7 @@ package com.example.medicalclinic.controller;
 import com.example.medicalclinic.model.ChangePasswordRequest;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
-import com.example.medicalclinic.model.mapper.DoctorMapper;
+import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.service.DoctorService;
 import lombok.RequiredArgsConstructor;

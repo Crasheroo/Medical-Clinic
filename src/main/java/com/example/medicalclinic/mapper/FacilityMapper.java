@@ -1,4 +1,4 @@
-package com.example.medicalclinic.model.mapper;
+package com.example.medicalclinic.mapper;
 
 import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.entity.Doctor;
