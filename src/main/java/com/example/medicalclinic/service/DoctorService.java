@@ -1,14 +1,13 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.DoctorException;
-import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.DoctorMapper;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.entity.Facility;
 import com.example.medicalclinic.repository.DoctorRepository;
-import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +20,8 @@ import java.util.List;
 @Service
 public class DoctorService {
     private final DoctorRepository doctorRepository;
-    private final FacilityRepository facilityRepository;
     private final DoctorMapper doctorMapper;
+    private final EntityFinder entityFinder;
 
     public PageableContentDTO<DoctorDTO> getAllDoctors(Pageable pageable) {
         Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
@@ -34,72 +33,50 @@ public class DoctorService {
     }
 
     public DoctorDTO getDoctorByEmail(String email) {
-        return doctorMapper.toDTO(findDoctorByEmail(email));
+        return doctorMapper.toDTO(entityFinder.getDoctorByEmail(email));
     }
 
     @Transactional
     public DoctorDTO addDoctor(Doctor doctor) {
-        if (doctorRepository.findByEmail(doctor.getEmail()).isPresent()) {
-            throw new DoctorException("Doctor with email: " + doctor.getEmail() + " already exists");
-        }
+        doctorRepository.findByEmail(doctor.getEmail())
+                .ifPresent(existing -> { throw new DoctorException("Doctor with email: " + doctor.getEmail() + " already exists"); });
         return doctorMapper.toDTO(doctorRepository.save(doctor));
     }
 
     @Transactional
     public void removeDoctorByEmail(String email) {
-        Doctor doctor = findDoctorByEmail(email);
+        Doctor doctor = entityFinder.getDoctorByEmail(email);
         doctorRepository.delete(doctor);
     }
 
     public DoctorDTO editDoctorByEmail(String email, Doctor updatedDoctor) {
-        Doctor existingDoctor = findDoctorByEmail(email);
+        Doctor existingDoctor = entityFinder.getDoctorByEmail(email);
         updateEmailIfChanged(existingDoctor, updatedDoctor);
         existingDoctor.updateFrom(updatedDoctor);
         return doctorMapper.toDTO(doctorRepository.save(existingDoctor));
     }
 
     public Doctor changePassword(String email, String password) {
-        Doctor existingDoctor = findDoctorByEmail(email);
+        Doctor existingDoctor = entityFinder.getDoctorByEmail(email);
         existingDoctor.setPassword(password);
         return doctorRepository.save(existingDoctor);
     }
 
     @Transactional
     public DoctorDTO assignDoctorToFacility(Long doctorId, Long facilityId) {
-        Doctor doctor = findDoctorById(doctorId);
-        Facility facility = findFacilityById(facilityId);
-
-        if (!doctor.getFacilities().contains(facility)) {
-            doctor.getFacilities().add(facility);
-        }
-
+        Doctor doctor = entityFinder.getDoctorById(doctorId);
+        Facility facility = entityFinder.getFacilityById(facilityId);
+        doctor.getFacilities().add(facility);
         return doctorMapper.toDTO(doctorRepository.save(doctor));
     }
 
     @Transactional
     public void removeFacilityFromDoctor(Long doctorId, Long facilityId) {
-        Doctor doctor = findDoctorById(doctorId);
-        Facility facility = findFacilityById(facilityId);
+        Doctor doctor = entityFinder.getDoctorById(doctorId);
+        Facility facility = entityFinder.getFacilityById(facilityId);
 
-        if (doctor.getFacilities().contains(facility)) {
-            doctor.getFacilities().remove(facility);
-            doctorRepository.save(doctor);
-        }
-    }
-
-    private Doctor findDoctorByEmail(String email) {
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor with email: " + email + " not found"));
-    }
-
-    private Doctor findDoctorById(Long id) {
-        return doctorRepository.findById(id)
-                .orElseThrow(() -> new DoctorException("Doctor with ID: " + id + " not found"));
-    }
-
-    private Facility findFacilityById(Long facilityId) {
-        return facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new FacilityException("Facility with ID: " + facilityId + " not found"));
+        doctor.getFacilities().remove(facility);
+        doctorRepository.save(doctor);
     }
 
     private void updateEmailIfChanged(Doctor existingDoctor, Doctor updatedDoctor) {

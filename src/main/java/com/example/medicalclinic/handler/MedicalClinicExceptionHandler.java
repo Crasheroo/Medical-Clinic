@@ -3,6 +3,7 @@ package com.example.medicalclinic.handler;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.exception.PatientException;
+import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.model.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,12 @@ public class MedicalClinicExceptionHandler extends ResponseEntityExceptionHandle
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(FacilityException.class)
     public ErrorMessage handleFacilityException(FacilityException ex) {
+        return buildErrorResponse(ex.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(VisitException.class)
+    public ErrorMessage handleVisitException(VisitException ex) {
         return buildErrorResponse(ex.getMessage());
     }
 

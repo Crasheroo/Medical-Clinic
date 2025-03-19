@@ -1,5 +1,6 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
@@ -10,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +19,7 @@ import java.util.Optional;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
+    private final EntityFinder entityFinder;
 
     public PageableContentDTO<PatientDTO> getAllPatients(Pageable pageable) {
         Page<Patient> patientPage = patientRepository.findAll(pageable);
@@ -30,41 +31,36 @@ public class PatientService {
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        return patientMapper.toDTO(findPatientByEmail(email));
+        return patientMapper.toDTO(entityFinder.getPatientByEmail(email));
     }
 
     public Patient addPatient(Patient patient) {
-        if (patientRepository.findByEmail(patient.getEmail()).isPresent()) {
-            throw new PatientException("Patient with email: " + patient.getEmail() + " already exists");
-        }
-        if (patientRepository.findByIdCardNo(patient.getIdCardNo()).isPresent()) {
-            throw new PatientException("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists");
+        patientRepository.findByEmail(patient.getEmail())
+                .ifPresent(existing -> { throw new PatientException("Patient with email: " + patient.getEmail() + " already exists"); });
 
-        }
+        patientRepository.findByIdCardNo(patient.getIdCardNo())
+                .ifPresent(existing -> { throw new PatientException("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists"); });
+
         return patientRepository.save(patient);
     }
 
     public void removePatientByEmail(String email) {
-        patientRepository.delete(findPatientByEmail(email));
+        patientRepository.delete(entityFinder.getPatientByEmail(email));
     }
 
     public PatientDTO editPatientByEmail(String email, Patient updatedPatient) {
-        Patient existingPatient = findPatientByEmail(email);
+        Patient existingPatient = entityFinder.getPatientByEmail(email);
         updateEmailIfChanged(existingPatient, updatedPatient);
         existingPatient.updateFrom(updatedPatient);
         return patientMapper.toDTO(patientRepository.save(existingPatient));
     }
 
     public Patient changePassword(String email, String password) {
-        Patient existingPatient = findPatientByEmail(email);
+        Patient existingPatient = entityFinder.getPatientByEmail(email);
         existingPatient.setPassword(password);
         return patientRepository.save(existingPatient);
     }
 
-    private Patient findPatientByEmail(String email) {
-        return patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient with email: " + email + " not found"));
-    }
 
     private void updateEmailIfChanged(Patient existingPatient, Patient updatedPatient) {
         Optional.ofNullable(updatedPatient.getEmail())

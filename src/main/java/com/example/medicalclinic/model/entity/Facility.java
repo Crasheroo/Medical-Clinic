@@ -23,7 +23,8 @@ public class Facility {
     private String postcode;
     private String street;
     private String buildingNumber;
-    @ManyToMany(mappedBy = "facilities", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToMany(mappedBy = "facilities", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Doctor> doctors = new HashSet<>();
 
     public void updateFrom(Facility other) {
