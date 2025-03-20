@@ -1,13 +1,13 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.model.CreateDoctorRequest;
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.entity.Facility;
-import com.example.medicalclinic.model.CreateFacilityRequest;
+import com.example.medicalclinic.model.CreateFacilityCommand;
 import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class FacilityService {
     }
 
     @Transactional
-    public List<FacilityDTO> saveFacilitiesWithDoctors(List<CreateFacilityRequest> requests) {
+    public List<FacilityDTO> saveFacilitiesWithDoctors(List<CreateFacilityCommand> requests) {
         List<Facility> facilities = new ArrayList<>();
 
         requests.forEach(request -> {
@@ -63,12 +63,12 @@ public class FacilityService {
         return facilityMapper.listToDto(facilityRepository.saveAll(facilities));
     }
 
-    private Facility prepareFacility(CreateFacilityRequest request) {
+    private Facility prepareFacility(CreateFacilityCommand request) {
         return facilityRepository.findByFacilityName(request.facilityName())
                 .orElseGet(() -> Facility.from(request));
     }
 
-    private void assignDoctorsToFacility(Facility facility, List<CreateDoctorRequest> doctorRequests) {
+    private void assignDoctorsToFacility(Facility facility, List<CreateDoctorCommand> doctorRequests) {
         Set<Doctor> doctors = new HashSet<>();
 
         Optional.ofNullable(doctorRequests)

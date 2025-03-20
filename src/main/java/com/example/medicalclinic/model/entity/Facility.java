@@ -1,6 +1,6 @@
 package com.example.medicalclinic.model.entity;
 
-import com.example.medicalclinic.model.CreateFacilityRequest;
+import com.example.medicalclinic.model.CreateFacilityCommand;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +35,7 @@ public class Facility {
         Optional.ofNullable(other.getBuildingNumber()).ifPresent(newEmail -> this.buildingNumber = newEmail);
     }
 
-    public static Facility from(CreateFacilityRequest request) {
+    public static Facility from(CreateFacilityCommand request) {
         return Facility.builder()
                 .facilityName(request.facilityName())
                 .city(request.city())

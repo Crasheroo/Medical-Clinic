@@ -1,6 +1,6 @@
 package com.example.medicalclinic.model;
 
-public record ChangePasswordRequest (
+public record ChangePasswordCommand(
         String password)
 {
 }

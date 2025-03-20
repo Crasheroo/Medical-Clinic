@@ -1,6 +1,6 @@
 package com.example.medicalclinic.model.entity;
 
-import com.example.medicalclinic.model.CreateDoctorRequest;
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +34,7 @@ public class Doctor {
                 .ifPresent(newEmail -> this.email = newEmail);
     }
 
-    public static Doctor from(CreateDoctorRequest request) {
+    public static Doctor from(CreateDoctorCommand request) {
         return Doctor.builder()
                 .email(request.email())
                 .password(request.password())

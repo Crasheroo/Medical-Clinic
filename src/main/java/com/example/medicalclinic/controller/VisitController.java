@@ -1,13 +1,14 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.model.CreateVisitCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
 import com.example.medicalclinic.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @RestController
@@ -15,14 +16,15 @@ import java.time.LocalDateTime;
 public class VisitController {
     private final VisitService visitService;
 
-    @PostMapping("/create")
-    public void createVisit(@RequestParam Long doctorId, @RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime) {
-        visitService.createVisit(doctorId, startTime, endTime);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public VisitDTO createVisit(@RequestBody CreateVisitCommand request) {
+        return visitService.createVisit(request.doctorId(), request.startTime(), request.endTime());
     }
 
     @PostMapping("/book")
-    public void bookVisit(@RequestParam Long visitId, @RequestParam Long patientId) {
-        visitService.bookVisit(visitId, patientId);
+    public VisitDTO bookVisit(@RequestParam Long visitId, @RequestParam Long patientId) {
+        return visitService.bookVisit(visitId, patientId);
     }
 
     @GetMapping

@@ -1,6 +1,6 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.model.ChangePasswordRequest;
+import com.example.medicalclinic.model.ChangePasswordCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.DoctorMapper;
@@ -46,7 +46,7 @@ public class DoctorController {
     }
 
     @PatchMapping("/{email}/password")
-    public Doctor editDoctorPassword(@PathVariable String email, @RequestBody ChangePasswordRequest request) {
+    public Doctor editDoctorPassword(@PathVariable String email, @RequestBody ChangePasswordCommand request) {
         return doctorService.changePassword(email, request.password());
     }
 

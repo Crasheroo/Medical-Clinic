@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +25,15 @@ public class VisitService {
     private final EntityFinder entityFinder;
 
     @Transactional
-    public void createVisit(Long doctorId, LocalDateTime startTime, LocalDateTime endTime) {
+    public VisitDTO createVisit(Long doctorId, LocalDateTime startTime, LocalDateTime endTime) {
         validateTimes(startTime, endTime);
 
         Doctor doctor = entityFinder.getDoctorById(doctorId);
 
-        Optional.of(isDoctorAvailable(doctorId, startTime, endTime))
-                .filter(isNotAvailable -> isNotAvailable)
-                .ifPresent(unused -> { throw new VisitException("Doctor has a visit at this time"); });
+        List<Visit> conflictingVisits = getConflictingVisits(doctorId, startTime, endTime);
+        if (!conflictingVisits.isEmpty()) {
+            throw new VisitException("Doctor has a visit at this time");
+        }
 
         Visit visit = Visit.builder()
                 .doctor(doctor)
@@ -42,19 +42,22 @@ public class VisitService {
                 .build();
 
         visitRepository.save(visit);
+        return visitMapper.toDto(visit);
     }
 
     @Transactional
-    public void bookVisit(Long visitId, Long patientId) {
+    public VisitDTO bookVisit(Long visitId, Long patientId) {
         Visit visit = entityFinder.getVisitById(visitId);
 
-        Optional.ofNullable(visit.getPatient())
-                .ifPresent(patient -> { throw new VisitException("Visit is already booked"); });
+        if (visit.hasPatient()) {
+            throw new VisitException("Visit is already booked");
+        }
 
         Patient patient = entityFinder.getPatientById(patientId);
 
         visit.setPatient(patient);
         visitRepository.save(visit);
+        return visitMapper.toDto(visit);
     }
 
     @Transactional
@@ -79,8 +82,9 @@ public class VisitService {
         }
     }
 
-    private boolean isDoctorAvailable(Long doctorId, LocalDateTime startTime, LocalDateTime endTime) {
+    private List<Visit> getConflictingVisits(Long doctorId, LocalDateTime startTime, LocalDateTime endTime) {
         return visitRepository.findByDoctorId(doctorId).stream()
-                .anyMatch(visit -> visit.getStartTime().isBefore(endTime) && visit.getEndTime().isAfter(startTime));
+                .filter(visit -> visit.getStartTime().isBefore(endTime) && visit.getEndTime().isAfter(startTime))
+                .toList();
     }
 }

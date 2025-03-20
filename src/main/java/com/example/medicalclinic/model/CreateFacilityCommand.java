@@ -2,11 +2,11 @@ package com.example.medicalclinic.model;
 
 import java.util.List;
 
-public record CreateFacilityRequest(
+public record CreateFacilityCommand(
         String facilityName,
         String city,
         String postcode,
         String street,
         String buildingNumber,
-        List<CreateDoctorRequest> doctors) {
+        List<CreateDoctorCommand> doctors) {
 }

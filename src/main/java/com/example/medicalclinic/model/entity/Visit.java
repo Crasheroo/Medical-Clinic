@@ -27,7 +27,7 @@ public class Visit {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    public boolean isAvailable() {
-        return this.patient == null;
+    public boolean hasPatient() {
+        return this.patient != null;
     }
 }
