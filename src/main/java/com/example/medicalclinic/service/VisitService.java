@@ -1,13 +1,15 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.mapper.VisitMapper;
-import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.model.entity.Visit;
+import com.example.medicalclinic.repository.DoctorRepository;
+import com.example.medicalclinic.repository.PatientRepository;
 import com.example.medicalclinic.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,13 +24,15 @@ import java.util.List;
 public class VisitService {
     private final VisitRepository visitRepository;
     private final VisitMapper visitMapper;
-    private final EntityFinder entityFinder;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
 
     @Transactional
     public VisitDTO createVisit(Long doctorId, LocalDateTime startTime, LocalDateTime endTime) {
         validateTimes(startTime, endTime);
 
-        Doctor doctor = entityFinder.getDoctorById(doctorId);
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
 
         List<Visit> conflictingVisits = getConflictingVisits(doctorId, startTime, endTime);
         if (!conflictingVisits.isEmpty()) {
@@ -47,13 +51,15 @@ public class VisitService {
 
     @Transactional
     public VisitDTO bookVisit(Long visitId, Long patientId) {
-        Visit visit = entityFinder.getVisitById(visitId);
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new VisitException("Visit doesnt exist"));
 
         if (visit.hasPatient()) {
             throw new VisitException("Visit is already booked");
         }
 
-        Patient patient = entityFinder.getPatientById(patientId);
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new VisitException("Patient doesnt exist"));;
 
         visit.setPatient(patient);
         visitRepository.save(visit);

@@ -1,6 +1,5 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
@@ -19,7 +18,6 @@ import java.util.Optional;
 public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
-    private final EntityFinder entityFinder;
 
     public PageableContentDTO<PatientDTO> getAllPatients(Pageable pageable) {
         Page<Patient> patientPage = patientRepository.findAll(pageable);
@@ -31,7 +29,8 @@ public class PatientService {
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        return patientMapper.toDTO(entityFinder.getPatientByEmail(email));
+        return patientMapper.toDTO(patientRepository.findByEmail(email)
+                .orElseThrow(() -> new PatientException("Patient doesnt exist")));
     }
 
     public Patient addPatient(Patient patient) {
@@ -45,18 +44,21 @@ public class PatientService {
     }
 
     public void removePatientByEmail(String email) {
-        patientRepository.delete(entityFinder.getPatientByEmail(email));
+        patientRepository.delete(patientRepository.findByEmail(email)
+                .orElseThrow(() -> new PatientException("Patient doesnt exist")));
     }
 
     public PatientDTO editPatientByEmail(String email, Patient updatedPatient) {
-        Patient existingPatient = entityFinder.getPatientByEmail(email);
+        Patient existingPatient = patientRepository.findByEmail(email)
+                .orElseThrow(() -> new PatientException("Patient doesnt exist"));
         updateEmailIfChanged(existingPatient, updatedPatient);
         existingPatient.updateFrom(updatedPatient);
         return patientMapper.toDTO(patientRepository.save(existingPatient));
     }
 
     public Patient changePassword(String email, String password) {
-        Patient existingPatient = entityFinder.getPatientByEmail(email);
+        Patient existingPatient = patientRepository.findByEmail(email)
+                        .orElseThrow(() -> new PatientException("Patient doesnt exist"));
         existingPatient.setPassword(password);
         return patientRepository.save(existingPatient);
     }

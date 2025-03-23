@@ -36,8 +36,8 @@ public class DoctorController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public DoctorDTO addDoctor(@RequestBody DoctorDTO doctor) {
-        return doctorService.addDoctor(doctorMapper.toEntity(doctor));
+    public Doctor addDoctor(@RequestBody DoctorDTO doctor) {
+        return doctorService.addDoctor(doctor);
     }
 
     @PutMapping("/{email}")

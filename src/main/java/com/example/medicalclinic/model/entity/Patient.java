@@ -3,6 +3,7 @@ package com.example.medicalclinic.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class Patient {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private LocalDate birthday;
+    private LocalDateTime birthday;
 
     public void updateFrom(Patient other) {
         if (other.getPassword() != null) {

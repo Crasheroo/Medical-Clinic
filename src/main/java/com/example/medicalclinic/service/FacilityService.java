@@ -1,7 +1,8 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.exception.DoctorException;
+import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.model.CreateDoctorCommand;
-import com.example.medicalclinic.model.EntityFinder;
 import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.FacilityMapper;
@@ -24,7 +25,6 @@ public class FacilityService {
     private final FacilityRepository facilityRepository;
     private final DoctorRepository doctorRepository;
     private final FacilityMapper facilityMapper;
-    private final EntityFinder entityFinder;
 
     public PageableContentDTO<FacilityDTO> getAllFacilities(Pageable pageable) {
         Page<Facility> facilityPage = facilityRepository.findAll(pageable);
@@ -36,16 +36,19 @@ public class FacilityService {
     }
 
     public Facility getFacilityByName(String facilityName) {
-        return entityFinder.getFacilityByName(facilityName);
+        return facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
     }
 
     public void removeFacilityByName(String facilityName) {
-        Facility facility = entityFinder.getFacilityByName(facilityName);
+        Facility facility = facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
         facilityRepository.delete(facility);
     }
 
     public Facility updateByName(String facilityName, Facility updatedFacility) {
-        Facility existingFacility = entityFinder.getFacilityByName(facilityName);
+        Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
         existingFacility.updateFrom(updatedFacility);
         return facilityRepository.save(existingFacility);
     }
