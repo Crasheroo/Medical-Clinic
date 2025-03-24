@@ -1,14 +1,11 @@
 package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.DoctorException;
-import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.mapper.VisitMapper;
-import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
 import com.example.medicalclinic.model.entity.Doctor;
-import com.example.medicalclinic.model.entity.Facility;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.model.entity.Visit;
 import com.example.medicalclinic.repository.DoctorRepository;
@@ -24,12 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
