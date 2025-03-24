@@ -19,9 +19,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -35,7 +37,7 @@ public class DoctorServiceTest {
     private DoctorService doctorService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.doctorRepository = Mockito.mock(DoctorRepository.class);
         this.facilityRepository = Mockito.mock(FacilityRepository.class);
         this.doctorMapper = Mappers.getMapper(DoctorMapper.class);
@@ -43,7 +45,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void getAllDoctors_DoctorsExist_DoctorsFound() {
+    void getAllDoctors_DoctorsExist_DoctorsFound() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
         List<Doctor> doctorList = List.of(
@@ -67,7 +69,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void addDoctor_DoctorDoesntExists_DoctorAdded() {
+    void addDoctor_DoctorDoesntExists_DoctorAdded() {
         // Given
         Doctor doctor = createDoctor(2L);
         when(doctorRepository.findByEmail(doctor.getEmail())).thenReturn(Optional.empty());
@@ -81,7 +83,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void addDoctor_doctorNotFound_throwsException() {
+    void addDoctor_doctorNotFound_throwsException() {
         // Given
         Doctor doctor = createDoctor("test@email.com");
         when(doctorRepository.findByEmail(doctor.getEmail())).thenReturn(Optional.of(doctor));
@@ -94,7 +96,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void editDoctorByEmail_DoctorExists_DataChanged() {
+    void editDoctorByEmail_DoctorExists_DataChanged() {
         // Given
         String email = "test@email.com";
         Doctor newDoctor = createDoctor("new@email.com", "newPassword");
@@ -111,7 +113,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void editDoctorByEmail_doctorNotFound_throwsException() {
+    void editDoctorByEmail_doctorNotFound_throwsException() {
         // Given
         String email = "email@email.com";
         Doctor doctor = createDoctor("test@email.com", "password");
@@ -125,7 +127,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeDoctorByEmail_DoctorExists_DoctorRemoved() {
+    void removeDoctorByEmail_DoctorExists_DoctorRemoved() {
         // Given
         String email = "test@email.com";
         Doctor doctor = createDoctor(email);
@@ -139,7 +141,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeDoctorByEmail_doctorNotFound_throwsException() {
+    void removeDoctorByEmail_doctorNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -152,7 +154,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void getDoctorByEmail_DoctorExists_DoctorFound() {
+    void getDoctorByEmail_DoctorExists_DoctorFound() {
         // Given
         String email = "test@email.com";
         Doctor currentDoctor = createDoctor("test@email.com", "password");
@@ -166,7 +168,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void getDoctorByEmail_doctorNotFound_throwsException() {
+    void getDoctorByEmail_doctorNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -179,7 +181,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void assignDoctorToFacility_DoctorAndFacilityExists_DoctorAssigned() {
+    void assignDoctorToFacility_DoctorAndFacilityExists_DoctorAssigned() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;
@@ -199,7 +201,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void assignDoctorToFacility_doctorNotFound_throwsException() {
+    void assignDoctorToFacility_doctorNotFound_throwsException() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;
@@ -213,7 +215,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void assignDoctorToFacility_facilityNotFound_throwsException() {
+    void assignDoctorToFacility_facilityNotFound_throwsException() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;
@@ -229,7 +231,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void changePassword_DoctorExists_DataChanged() {
+    void changePassword_DoctorExists_DataChanged() {
         // Given
         String email = "test@email.com";
         String password = "newPassword";
@@ -245,7 +247,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void changePassword_doctorNotFound_throwsException() {
+    void changePassword_doctorNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         String password = "password";
@@ -259,7 +261,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeFacilityFromDoctor_doctorFound_facilityRemoved() {
+    void removeFacilityFromDoctor_doctorFound_facilityRemoved() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;
@@ -278,7 +280,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeFacilityFromDoctor_doctorNotFound_throwsException() {
+    void removeFacilityFromDoctor_doctorNotFound_throwsException() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;
@@ -293,7 +295,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    public void removeFacilityFromDoctor_facilityNotFound_throwsException() {
+    void removeFacilityFromDoctor_facilityNotFound_throwsException() {
         // Given
         Long doctorId = 1L;
         Long facilityId = 1L;

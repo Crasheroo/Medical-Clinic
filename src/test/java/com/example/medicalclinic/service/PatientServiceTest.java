@@ -16,8 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -29,14 +31,14 @@ public class PatientServiceTest {
     private PatientMapper patientMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.patientRepository = Mockito.mock(PatientRepository.class);
         this.patientMapper = Mappers.getMapper(PatientMapper.class);
         this.patientService = new PatientService(patientRepository, patientMapper);
     }
 
     @Test
-    public void getAllPatients_PatientExist_PatientFound() {
+    void getAllPatients_PatientExist_PatientFound() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
         List<Patient> patientList = List.of(
@@ -60,7 +62,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void editPatientByEmail_PatientExists_DataChanged() {
+    void editPatientByEmail_PatientExists_DataChanged() {
         // Given
         String email = "test@gmail.com";
         Patient newPatient = createPatient("nowy@email.com", "Normalny", "Czlowiek");
@@ -77,7 +79,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void editPatientByEmail_patientNotFound_throwsException() {
+    void editPatientByEmail_patientNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         Patient patient = createPatient("123", "email@email.com");
@@ -91,7 +93,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void getPatientByEmail_PatientExists_PatientFound() {
+    void getPatientByEmail_PatientExists_PatientFound() {
         // Given
         String email = "test@email.com";
         Patient currentPatient = createPatient("test@email.com", "Gosciu", "Gosciowy");
@@ -106,7 +108,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void getPatientByEmail_patientNotFound_throwsException() {
+    void getPatientByEmail_patientNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -119,7 +121,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void changePassword_PatientExists_DataChanged() {
+    void changePassword_PatientExists_DataChanged() {
         // Given
         String email = "test@email.com";
         String password = "examplePassword";
@@ -136,7 +138,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void changePassword_patientNotFound_throwsException() {
+    void changePassword_patientNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         String password = "password";
@@ -150,7 +152,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void addPatient_PatientExists_PatientAdded() {
+    void addPatient_PatientExists_PatientAdded() {
         // Given
         String email = "test@email.com";
         String idCardNo = "998";
@@ -169,7 +171,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void addPatient_emailAlreadyExists_throwsException() {
+    void addPatient_emailAlreadyExists_throwsException() {
         // Given
         Patient patient = createPatient(1L, "name", "surname", "email@email.com", "123");
         when(patientRepository.findByEmail(patient.getEmail())).thenReturn(Optional.of(Patient.builder().build()));
@@ -182,7 +184,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void addPatient_idCardAlreadyExists_throwsException() {
+    void addPatient_idCardAlreadyExists_throwsException() {
         // Given
         Patient patient = createPatient(1L, "name", "surname", "email@email.com", "123");
         when(patientRepository.findByIdCardNo(patient.getIdCardNo())).thenReturn(Optional.of(Patient.builder().build()));
@@ -195,7 +197,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void removePatientByEmail_PatientExists_PatientRemoved() {
+    void removePatientByEmail_PatientExists_PatientRemoved() {
         // Given
         String email = "test@email.com";
         Patient patient = createPatient("123", email);
@@ -209,7 +211,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    public void removePatientByEmail_patientNotFound_throwsException() {
+    void removePatientByEmail_patientNotFound_throwsException() {
         // Given
         String email = "test@email.com";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());

@@ -21,10 +21,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,7 @@ public class VisitServiceTest {
     private VisitService visitService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.visitRepository = Mockito.mock(VisitRepository.class);
         this.doctorRepository = Mockito.mock(DoctorRepository.class);
         this.patientRepository = Mockito.mock(PatientRepository.class);
@@ -48,7 +50,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void createVisit_visitExist_VisitCreated() {
+    void createVisit_visitExist_VisitCreated() {
         // Given
         Long doctorId = 1L;
         LocalDateTime startTime = LocalDateTime.of(2025, 05, 12, 13, 00);
@@ -72,7 +74,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void createVisit_doctorNotFound_throwsException() {
+    void createVisit_doctorNotFound_throwsException() {
         // Given
         Long doctorId = 1L;
         LocalDateTime startTime = LocalDateTime.of(2025, 5, 12, 13, 0);
@@ -87,7 +89,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void createVisit_conflictingVisit_throwsException() {
+    void createVisit_conflictingVisit_throwsException() {
         // Given
         Long doctorId = 1L;
         LocalDateTime startTime = LocalDateTime.of(2025, 5, 12, 13, 0);
@@ -106,7 +108,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void bookVisit_visitExist_VisitBooked() {
+    void bookVisit_visitExist_VisitBooked() {
         // Given
         Long visitId = 1L;
         Long patientId = 1L;
@@ -129,7 +131,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void bookVisit_visitNotFound_throwsException() {
+    void bookVisit_visitNotFound_throwsException() {
         // Given
         Long visitId = 1L;
         Long patientId = 2L;
@@ -143,7 +145,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void bookVisit_patientNotFound_throwsException() {
+    void bookVisit_patientNotFound_throwsException() {
         // Given
         Long visitId = 1L;
         Long patientId = 1L;
@@ -160,7 +162,7 @@ public class VisitServiceTest {
     }
 
     @Test
-    public void getVisits_visitsExists_VisitsFound() {
+    void getVisits_visitsExists_VisitsFound() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
         List<Visit> visitList = List.of(

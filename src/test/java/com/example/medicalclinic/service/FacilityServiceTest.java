@@ -20,10 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +40,7 @@ public class FacilityServiceTest {
     private FacilityService facilityService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.facilityRepository = Mockito.mock(FacilityRepository.class);
         this.doctorRepository = Mockito.mock(DoctorRepository.class);
         this.facilityMapper = Mappers.getMapper(FacilityMapper.class);
@@ -46,7 +48,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void getAllFacilities_FacilitiesExist_FacilitiesFound() {
+    void getAllFacilities_FacilitiesExist_FacilitiesFound() {
         // Given
         Pageable pageable = PageRequest.of(0, 10);
         List<Facility> facilityList = List.of(
@@ -70,7 +72,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void getFacilityByName_FacilityExist_FacilityFound() {
+    void getFacilityByName_FacilityExist_FacilityFound() {
         // Given
         String facilityName = "testName";
         Facility currentFacility = createFacility(1L, "testName");
@@ -84,7 +86,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void getFacilityByName_facilityNotFound_throwsException() {
+    void getFacilityByName_facilityNotFound_throwsException() {
         // Given
         String facilityName = "testName";
         when(facilityRepository.findByFacilityName(facilityName)).thenReturn(Optional.empty());
@@ -97,7 +99,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void removeFacilityByName_FacilityExist_FacilityRemoved() {
+    void removeFacilityByName_FacilityExist_FacilityRemoved() {
         // Given
         String facilityName = "testName";
         Facility facility = createFacility(facilityName);
@@ -111,7 +113,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void removeFacilityByName_facilityNotFound_throwsException() {
+    void removeFacilityByName_facilityNotFound_throwsException() {
         // Given
         String facilityName = "testName";
         when(facilityRepository.findByFacilityName(facilityName)).thenReturn(Optional.empty());
@@ -124,7 +126,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void updateByName_FacilityExist_DataChanged() {
+    void updateByName_FacilityExist_DataChanged() {
         // Given
         String facilityName = "testName";
         Facility newFacility = createFacility(1L, "newFacility");
@@ -141,7 +143,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void updateByName_facilityNotFound_throwsException() {
+    void updateByName_facilityNotFound_throwsException() {
         // Given
         String facilityName = "testName";
         Facility facility = createFacility(1L, facilityName);
@@ -155,7 +157,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void saveFacilitiesWithDoctors_FacilitiesCreated_FacilitiesAdded() {
+    void saveFacilitiesWithDoctors_FacilitiesCreated_FacilitiesAdded() {
         // Given
         CreateDoctorCommand doctorCmd1 = CreateDoctorCommand.builder()
                 .email("test@email.com")
@@ -207,7 +209,7 @@ public class FacilityServiceTest {
     }
 
     @Test
-    public void saveFacilitiesWithDoctors_emptyList_throwsException() {
+    void saveFacilitiesWithDoctors_emptyList_throwsException() {
         //Given
         List<CreateFacilityCommand> request = List.of();
 
