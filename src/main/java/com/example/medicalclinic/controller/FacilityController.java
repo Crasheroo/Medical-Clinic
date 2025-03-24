@@ -26,7 +26,7 @@ public class FacilityController {
     }
 
     @GetMapping("/{facilityName}")
-    public Facility getFacilityByName(@PathVariable("facilityName") String facilityName) {
+    public FacilityDTO getFacilityByName(@PathVariable("facilityName") String facilityName) {
         return facilityService.getFacilityByName(facilityName);
     }
 
@@ -37,7 +37,7 @@ public class FacilityController {
     }
 
     @PutMapping("/{facilityName}")
-    public Facility editFacility(@PathVariable String facilityName, @RequestBody FacilityDTO facility) {
+    public FacilityDTO editFacility(@PathVariable String facilityName, @RequestBody FacilityDTO facility) {
         return facilityService.updateByName(facilityName, facilityMapper.toEntity(facility));
     }
 

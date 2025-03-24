@@ -32,7 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class FacilityServiceTest {
     private FacilityRepository facilityRepository;
     private DoctorRepository doctorRepository;
@@ -79,7 +78,7 @@ public class FacilityServiceTest {
         when(facilityRepository.findByFacilityName(facilityName)).thenReturn(Optional.of(currentFacility));
 
         // When
-        Facility result = facilityService.getFacilityByName(facilityName);
+        FacilityDTO result = facilityService.getFacilityByName(facilityName);
 
         // Then
         assertEquals("testName", result.getFacilityName());
@@ -135,7 +134,7 @@ public class FacilityServiceTest {
         when(facilityRepository.save(any())).thenReturn(currentFacility);
 
         // when
-        Facility result = facilityService.updateByName(facilityName, newFacility);
+        FacilityDTO result = facilityService.updateByName(facilityName, newFacility);
 
         //then
         assertEquals(1L, result.getId());

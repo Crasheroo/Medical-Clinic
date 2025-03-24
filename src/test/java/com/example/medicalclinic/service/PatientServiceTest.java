@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class PatientServiceTest {
     private PatientRepository patientRepository;
     private PatientService patientService;
@@ -154,20 +153,19 @@ public class PatientServiceTest {
     @Test
     void addPatient_PatientExists_PatientAdded() {
         // Given
-        String email = "test@email.com";
-        String idCardNo = "998";
-        Patient newPatient = createPatient(1L, "name", "surname", "email@email.com", "12345");
-        Patient existingPatient = createPatient("123", "existing@email.com");
-
-        when(patientRepository.findByEmail(email)).thenReturn(Optional.of(existingPatient));
-        when(patientRepository.findByIdCardNo(idCardNo)).thenReturn(Optional.of(existingPatient));
-        when(patientRepository.save(any())).thenReturn(newPatient);
+        Patient patient = createPatient("name", "surname", "email@email.com", "12345");
+        Patient savedPatient = createPatient("name", "surname", "email@email.com", "12345");
+        when(patientRepository.findByEmail(patient.getEmail())).thenReturn(Optional.empty());
+        when(patientRepository.findByIdCardNo(patient.getIdCardNo())).thenReturn(Optional.empty());
+        when(patientRepository.save(any())).thenReturn(savedPatient);
 
         // When
-        Patient result = patientService.addPatient(newPatient);
+        PatientDTO result = patientService.addPatient(patient);
 
         // Then
-        assertEquals(newPatient, result);
+        assertEquals(savedPatient.getEmail(), result.getEmail());
+        assertEquals("name surname", result.getFullName());
+        assertEquals(savedPatient.getIdCardNo(), result.getIdCardNo());
     }
 
     @Test
@@ -246,6 +244,15 @@ public class PatientServiceTest {
                 .build();
     }
 
+    private Patient createPatient(String firstName, String lastName, String email, String idCardNo) {
+        return Patient.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .idCardNo(idCardNo)
+                .email(email)
+                .build();
+    }
+
     private Patient createPatient(Long id, String firstName, String lastName, String email, String idCardNo) {
         return Patient.builder()
                 .id(id)
@@ -253,6 +260,15 @@ public class PatientServiceTest {
                 .lastName(lastName)
                 .idCardNo(idCardNo)
                 .email(email)
+                .build();
+    }
+
+    private PatientDTO createPatientDto(Long id, String firstName, String lastName, String email, String idCardNo) {
+        return PatientDTO.builder()
+                .id(id)
+                .fullName(firstName + lastName)
+                .email(email)
+                .idCardNo(idCardNo)
                 .build();
     }
 }

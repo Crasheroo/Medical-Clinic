@@ -1,6 +1,7 @@
 package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.FacilityException;
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.mapper.DoctorMapper;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -39,12 +41,12 @@ public class DoctorService {
     }
 
     @Transactional
-    public Doctor addDoctor(DoctorDTO doctor) {
-        doctorRepository.findByEmail(doctor.getEmail())
+    public DoctorDTO addDoctor(CreateDoctorCommand doctor) {
+        doctorRepository.findByEmail(doctor.email())
                 .ifPresent(existing -> {
-                    throw new DoctorException("Doctor with email: " + doctor.getEmail() + " already exists");
+                    throw new DoctorException("Doctor with email: " + doctor.email() + " already exists");
                 });
-        return doctorRepository.save(doctorMapper.toEntity(doctor));
+        return doctorMapper.toDTO(doctorRepository.save(doctorMapper.toEntity(doctor)));
     }
 
     @Transactional
@@ -54,19 +56,13 @@ public class DoctorService {
         doctorRepository.delete(doctor);
     }
 
-    public DoctorDTO editDoctorByEmail(String email, Doctor updatedDoctor) {
-        Doctor existingDoctor = doctorRepository.findByEmail(email)
+    public DoctorDTO editDoctorByEmail(String email, CreateDoctorCommand command) {
+        return doctorRepository.findByEmail(email)
+                .map(doctor -> {
+                    doctor.updateFrom(command.email(), command.password());
+                    return doctorMapper.toDTO(doctorRepository.save(doctor));
+                })
                 .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
-        updateEmailIfChanged(existingDoctor, updatedDoctor);
-        existingDoctor.updateFrom(updatedDoctor);
-        return doctorMapper.toDTO(doctorRepository.save(existingDoctor));
-    }
-
-    public Doctor changePassword(String email, String password) {
-        Doctor existingDoctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
-        existingDoctor.setPassword(password);
-        return doctorRepository.save(existingDoctor);
     }
 
     @Transactional
@@ -88,19 +84,5 @@ public class DoctorService {
 
         doctor.getFacilities().remove(facility);
         doctorRepository.save(doctor);
-    }
-
-    private void updateEmailIfChanged(Doctor existingDoctor, Doctor updatedDoctor) {
-        String newEmail = updatedDoctor.getEmail();
-        if (isEmailChanged(existingDoctor, newEmail)) {
-            if (doctorRepository.findByEmail(newEmail).isPresent()) {
-                throw new DoctorException("Email " + newEmail + " is already in use.");
-            }
-            existingDoctor.setEmail(newEmail);
-        }
-    }
-
-    private boolean isEmailChanged(Doctor doctor, String newEmail) {
-        return newEmail != null && !newEmail.equals(doctor.getEmail());
     }
 }

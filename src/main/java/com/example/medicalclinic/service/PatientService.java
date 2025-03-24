@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,14 +35,15 @@ public class PatientService {
                 .orElseThrow(() -> new PatientException("Patient doesnt exist")));
     }
 
-    public Patient addPatient(Patient patient) {
+    @Transactional
+    public PatientDTO addPatient(Patient patient) {
         patientRepository.findByEmail(patient.getEmail())
                 .ifPresent(existing -> { throw new PatientException("Patient with email: " + patient.getEmail() + " already exists"); });
 
         patientRepository.findByIdCardNo(patient.getIdCardNo())
                 .ifPresent(existing -> { throw new PatientException("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists"); });
 
-        return patientRepository.save(patient);
+        return patientMapper.toDTO(patientRepository.save(patient));
     }
 
     public void removePatientByEmail(String email) {

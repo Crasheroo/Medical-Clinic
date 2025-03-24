@@ -1,6 +1,7 @@
 package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.model.ChangePasswordCommand;
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.mapper.DoctorMapper;
@@ -36,18 +37,13 @@ public class DoctorController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Doctor addDoctor(@RequestBody DoctorDTO doctor) {
-        return doctorService.addDoctor(doctor);
+    public DoctorDTO addDoctor(@RequestBody CreateDoctorCommand command) {
+        return doctorService.addDoctor(command);
     }
 
     @PutMapping("/{email}")
-    public DoctorDTO editDoctor(@PathVariable String email, @RequestBody DoctorDTO doctor) {
-        return doctorService.editDoctorByEmail(email, doctorMapper.toEntity(doctor));
-    }
-
-    @PatchMapping("/{email}/password")
-    public Doctor editDoctorPassword(@PathVariable String email, @RequestBody ChangePasswordCommand request) {
-        return doctorService.changePassword(email, request.password());
+    public DoctorDTO editDoctor(@PathVariable String email, @RequestBody CreateDoctorCommand command) {
+        return doctorService.editDoctorByEmail(email, command);
     }
 
     @PostMapping("/{doctorId}/facilities/{facilityId}")

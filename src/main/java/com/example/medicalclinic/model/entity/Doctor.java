@@ -26,12 +26,13 @@ public class Doctor {
     )
     private Set<Facility> facilities = new HashSet<>();
 
-    public void updateFrom(Doctor other) {
-        Optional.ofNullable(other.getPassword())
-                .ifPresent(newPassword -> this.password = newPassword);
+    public void updateFrom(String newEmail, String newPassword) {
+        Optional.ofNullable(newEmail)
+                .filter(email -> !email.equals(this.email))
+                .ifPresent(email -> this.email = email);
 
-        Optional.ofNullable(other.getEmail())
-                .ifPresent(newEmail -> this.email = newEmail);
+        Optional.ofNullable(newPassword)
+                .ifPresent(password -> this.password = password);
     }
 
     public static Doctor from(CreateDoctorCommand request) {

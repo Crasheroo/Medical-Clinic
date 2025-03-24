@@ -3,6 +3,7 @@ package com.example.medicalclinic.service;
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.mapper.DoctorMapper;
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.entity.Doctor;
@@ -12,6 +13,8 @@ import com.example.medicalclinic.repository.FacilityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,7 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class DoctorServiceTest {
     private DoctorRepository doctorRepository;
     private FacilityRepository facilityRepository;
@@ -71,42 +73,47 @@ public class DoctorServiceTest {
     @Test
     void addDoctor_DoctorDoesntExists_DoctorAdded() {
         // Given
-        Doctor doctor = createDoctor(2L);
-        when(doctorRepository.findByEmail(doctor.getEmail())).thenReturn(Optional.empty());
+        CreateDoctorCommand command = new CreateDoctorCommand("test@email.com", "password");
+        Doctor doctor = createDoctor(1L, command.email(), command.password());
+        when(doctorRepository.findByEmail(command.email())).thenReturn(Optional.empty());
         when(doctorRepository.save(any())).thenReturn(doctor);
 
         // When
-        Doctor result = doctorService.addDoctor(doctorMapper.toDTO(doctor));
+        DoctorDTO result = doctorService.addDoctor(command);
 
         // Then
         assertEquals(doctor.getId(), result.getId());
+        assertEquals(doctor.getEmail(), result.getEmail());
     }
 
     @Test
     void addDoctor_doctorNotFound_throwsException() {
         // Given
-        Doctor doctor = createDoctor("test@email.com");
-        when(doctorRepository.findByEmail(doctor.getEmail())).thenReturn(Optional.of(doctor));
+        CreateDoctorCommand command = new CreateDoctorCommand("test@email.com", "password");
+        Doctor existing = createDoctor(1L, command.email(), command.password());
+
+        when(doctorRepository.findByEmail(command.email())).thenReturn(Optional.of(existing));
 
         // When
-        DoctorException exception = assertThrows(DoctorException.class, () -> doctorService.addDoctor(doctorMapper.toDTO(doctor)));
+        DoctorException exception = assertThrows(DoctorException.class, () -> doctorService.addDoctor(command));
 
         // Then
-        assertEquals("Doctor with email: " + doctor.getEmail() + " already exists", exception.getMessage());
+        assertEquals("Doctor with email: " + command.email() + " already exists", exception.getMessage());
     }
 
     @Test
     void editDoctorByEmail_DoctorExists_DataChanged() {
         // Given
-        String email = "test@email.com";
-        Doctor newDoctor = createDoctor("new@email.com", "newPassword");
-        Doctor currentDoctor = createDoctor("old@email.com", "password");
+        String email = "old@email.com";
+        CreateDoctorCommand command = createDoctorCommand("new@email.com", "newPassword");
 
-        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(currentDoctor));
-        when(doctorRepository.save(any())).thenReturn(currentDoctor);
+        Doctor existingDoctor = createDoctor(1L, "old@email.com", "oldPassword");
+        Doctor savedDoctor = createDoctor(1L, "new@email.com", "newPassword");
+        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(existingDoctor));
+        when(doctorRepository.save(any())).thenReturn(savedDoctor);
 
         // When
-        DoctorDTO result = doctorService.editDoctorByEmail(email, newDoctor);
+        DoctorDTO result = doctorService.editDoctorByEmail(email, command);
 
         // Then
         assertEquals("new@email.com", result.getEmail());
@@ -116,11 +123,11 @@ public class DoctorServiceTest {
     void editDoctorByEmail_doctorNotFound_throwsException() {
         // Given
         String email = "email@email.com";
-        Doctor doctor = createDoctor("test@email.com", "password");
+        CreateDoctorCommand command = createDoctorCommand("new@email.com", "newPassword");
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // When
-        DoctorException exception = assertThrows(DoctorException.class, () -> doctorService.editDoctorByEmail(email, doctor));
+        DoctorException exception = assertThrows(DoctorException.class, () -> doctorService.editDoctorByEmail(email, command));
 
         // Then
         assertEquals("Doctor doesnt exist", exception.getMessage());
@@ -164,7 +171,7 @@ public class DoctorServiceTest {
         DoctorDTO result = doctorService.getDoctorByEmail(email);
 
         //Then
-        assertEquals("test@gmail.com", result.getEmail());
+        assertEquals("test@email.com", result.getEmail());
     }
 
     @Test
@@ -228,36 +235,6 @@ public class DoctorServiceTest {
 
         // Then
         assertEquals("Facility doesnt exist", exception.getMessage());
-    }
-
-    @Test
-    void changePassword_DoctorExists_DataChanged() {
-        // Given
-        String email = "test@email.com";
-        String password = "newPassword";
-        Doctor currentDoctor = createDoctor("test@email.com", "oldPassword");
-        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(currentDoctor));
-        when(doctorRepository.save(any())).thenReturn(currentDoctor);
-
-        // When
-        Doctor result = doctorService.changePassword(email, password);
-
-        // Then
-        assertEquals("newPassword", result.getPassword());
-    }
-
-    @Test
-    void changePassword_doctorNotFound_throwsException() {
-        // Given
-        String email = "test@email.com";
-        String password = "password";
-        when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-        // When
-        DoctorException exception = assertThrows(DoctorException.class, () -> doctorService.removeDoctorByEmail(email));
-
-        //Then
-        assertEquals("Doctor doesnt exist", exception.getMessage());
     }
 
     @Test
@@ -345,6 +322,13 @@ public class DoctorServiceTest {
                 .email("test@email.com")
                 .password("password")
                 .facilities(new HashSet<>())
+                .build();
+    }
+
+    private CreateDoctorCommand createDoctorCommand(String email, String password) {
+        return CreateDoctorCommand.builder()
+                .email("new@email.com")
+                .password("password")
                 .build();
     }
 }

@@ -35,9 +35,9 @@ public class FacilityService {
         return PageableContentDTO.from(facilityPage, facilityDTOS);
     }
 
-    public Facility getFacilityByName(String facilityName) {
-        return facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
+    public FacilityDTO getFacilityByName(String facilityName) {
+        return facilityMapper.toDto(facilityRepository.findByFacilityName(facilityName)
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist")));
     }
 
     public void removeFacilityByName(String facilityName) {
@@ -46,11 +46,11 @@ public class FacilityService {
         facilityRepository.delete(facility);
     }
 
-    public Facility updateByName(String facilityName, Facility updatedFacility) {
+    public FacilityDTO updateByName(String facilityName, Facility updatedFacility) {
         Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
                 .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
         existingFacility.updateFrom(updatedFacility);
-        return facilityRepository.save(existingFacility);
+        return facilityMapper.toDto(facilityRepository.save(existingFacility));
     }
 
     @Transactional

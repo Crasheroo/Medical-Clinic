@@ -1,5 +1,6 @@
 package com.example.medicalclinic.mapper;
 
+import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.entity.Facility;
@@ -14,7 +15,7 @@ public interface DoctorMapper {
 
     @Mapping(target = "facilityIds", source = "facilities", qualifiedByName = "mapFacilityIds")
     DoctorDTO toDTO(Doctor doctor);
-    Doctor toEntity(DoctorDTO doctorDTO);
+    Doctor toEntity(CreateDoctorCommand doctor);
 
     @Named("mapFacilityIds")
     static List<Long> mapFacilityIds(Set<Facility> facilities) {
