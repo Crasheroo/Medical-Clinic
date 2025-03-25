@@ -110,8 +110,8 @@ public class VisitServiceTest {
     void createVisit_startTimeInPast_throwsException() {
         // Given
         Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusMinutes(00).withMinute(10);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(30).withMinute(30);
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime endTime = startTime.plusHours(1);
 
         // When
         VisitException exception = assertThrows(VisitException.class, () ->
