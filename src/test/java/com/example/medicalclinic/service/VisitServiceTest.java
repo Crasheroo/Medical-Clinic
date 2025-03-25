@@ -53,15 +53,14 @@ public class VisitServiceTest {
     void createVisit_visitExist_VisitCreated() {
         // Given
         Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.of(2025, 05, 12, 13, 00);
-        LocalDateTime endTime = LocalDateTime.of(2025, 05, 12, 14, 00);
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30).withMinute(0);
+        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60).withMinute(0);
 
         Doctor doctor = createDoctor(doctorId);
         when(doctorRepository.findById(doctorId)).thenReturn(Optional.of(doctor));
         when(visitRepository.findByDoctorId(doctorId)).thenReturn(List.of());
 
         Visit visit = createVisit(doctor, startTime, endTime);
-
         when(visitRepository.save(any())).thenReturn(visit);
 
         // When
@@ -105,6 +104,51 @@ public class VisitServiceTest {
 
         // Then
         assertEquals("Doctor has a visit at this time", exception.getMessage());
+    }
+
+    @Test
+    void createVisit_startTimeInPast_throwsException() {
+        // Given
+        Long doctorId = 1L;
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(00).withMinute(10);
+        LocalDateTime endTime = LocalDateTime.now().plusMinutes(30).withMinute(30);
+
+        // When
+        VisitException exception = assertThrows(VisitException.class, () ->
+                visitService.createVisit(doctorId, startTime, endTime));
+
+        // Then
+        assertEquals("Can't create visits in the past", exception.getMessage());
+    }
+
+    @Test
+    void createVisit_endTimeBeforeStartTime_throwsException() {
+        //Given
+        Long doctorId = 1L;
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30);
+        LocalDateTime endTime = startTime.minusMinutes(15);
+
+        // When
+        VisitException exception = assertThrows(VisitException.class, () ->
+                visitService.createVisit(doctorId, startTime, endTime));
+
+        // Then
+        assertEquals("End time must be after start time", exception.getMessage());
+    }
+
+    @Test
+    void createVisit_notQuarterTime_throwsException() {
+        // Given
+        Long doctorId = 1L;
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30).withMinute(17);
+        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60).withMinute(32);
+
+        // When
+        VisitException exception = assertThrows(VisitException.class, () ->
+                visitService.createVisit(doctorId, startTime, endTime));
+
+        // Then
+        assertEquals("Visits must be in quarter (00, 15, 30, 45)", exception.getMessage());
     }
 
     @Test

@@ -84,7 +84,7 @@ public class VisitService {
             throw new VisitException("End time must be after start time");
         }
         if (startTime.getMinute() % 15 != 0 || endTime.getMinute() % 15 != 0) {
-            throw new VisitException("Visits must be in kwadrans (00, 15, 30, 45)");
+            throw new VisitException("Visits must be in quarter (00, 15, 30, 45)");
         }
     }
 

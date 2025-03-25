@@ -17,6 +17,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -153,8 +156,8 @@ public class PatientServiceTest {
     @Test
     void addPatient_PatientExists_PatientAdded() {
         // Given
-        Patient patient = createPatient("name", "surname", "email@email.com", "12345");
-        Patient savedPatient = createPatient("name", "surname", "email@email.com", "12345");
+        Patient patient = createPatient(1L, "name", "surname", "email@email.com", "12345", "123", LocalDate.of(2001, 01, 01));
+        Patient savedPatient = createPatient(1L, "name", "surname", "email@email.com", "12345", "123", LocalDate.of(2001, 01, 01));
         when(patientRepository.findByEmail(patient.getEmail())).thenReturn(Optional.empty());
         when(patientRepository.findByIdCardNo(patient.getIdCardNo())).thenReturn(Optional.empty());
         when(patientRepository.save(any())).thenReturn(savedPatient);
@@ -163,9 +166,12 @@ public class PatientServiceTest {
         PatientDTO result = patientService.addPatient(patient);
 
         // Then
+        assertEquals(savedPatient.getId(), result.getId());
         assertEquals(savedPatient.getEmail(), result.getEmail());
         assertEquals("name surname", result.getFullName());
         assertEquals(savedPatient.getIdCardNo(), result.getIdCardNo());
+        assertEquals(savedPatient.getPhoneNumber(), result.getPhoneNumber());
+        assertEquals(savedPatient.getBirthday(), result.getBirthday());
     }
 
     @Test
@@ -260,6 +266,18 @@ public class PatientServiceTest {
                 .lastName(lastName)
                 .idCardNo(idCardNo)
                 .email(email)
+                .build();
+    }
+
+    private Patient createPatient(Long id, String firstName, String lastName, String email, String idCardNo, String phoneNumber, LocalDate birthday) {
+        return Patient.builder()
+                .id(id)
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .idCardNo(idCardNo)
+                .phoneNumber(phoneNumber)
+                .birthday(birthday)
                 .build();
     }
 

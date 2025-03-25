@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -73,7 +74,7 @@ public class DoctorServiceTest {
     @Test
     void addDoctor_DoctorDoesntExists_DoctorAdded() {
         // Given
-        CreateDoctorCommand command = new CreateDoctorCommand("test@email.com", "password");
+        CreateDoctorCommand command = createDoctorCommand("test@email.com", "password");
         Doctor doctor = createDoctor(1L, command.email(), command.password());
         when(doctorRepository.findByEmail(command.email())).thenReturn(Optional.empty());
         when(doctorRepository.save(any())).thenReturn(doctor);
@@ -89,7 +90,7 @@ public class DoctorServiceTest {
     @Test
     void addDoctor_doctorNotFound_throwsException() {
         // Given
-        CreateDoctorCommand command = new CreateDoctorCommand("test@email.com", "password");
+        CreateDoctorCommand command = createDoctorCommand("test@email.com", "password");
         Doctor existing = createDoctor(1L, command.email(), command.password());
 
         when(doctorRepository.findByEmail(command.email())).thenReturn(Optional.of(existing));
@@ -327,8 +328,8 @@ public class DoctorServiceTest {
 
     private CreateDoctorCommand createDoctorCommand(String email, String password) {
         return CreateDoctorCommand.builder()
-                .email("new@email.com")
-                .password("password")
+                .email(email)
+                .password(password)
                 .build();
     }
 }

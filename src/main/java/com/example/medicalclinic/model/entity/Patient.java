@@ -24,7 +24,7 @@ public class Patient {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     public void updateFrom(Patient other) {
         if (other.getPassword() != null) {
