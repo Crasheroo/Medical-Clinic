@@ -73,7 +73,7 @@ public class PatientControllerTest {
         when(patientService.getPatientByEmail(email)).thenReturn(patientDto);
 
         mockMvc.perform(get("/patients/{email}", email)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email", is(email)));
     }
