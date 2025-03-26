@@ -41,7 +41,7 @@ public class PatientController {
     }
 
     @PutMapping("/{email}")
-    public PatientDTO editPatient(@PathVariable String email, @RequestBody Patient patient) {
+    public PatientDTO editPatient(@PathVariable("email") String email, @RequestBody Patient patient) {
         return patientService.editPatientByEmail(email, patient);
     }
 

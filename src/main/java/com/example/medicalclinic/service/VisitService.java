@@ -1,6 +1,7 @@
 package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.DoctorException;
+import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.mapper.VisitMapper;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
@@ -59,7 +60,7 @@ public class VisitService {
         }
 
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new VisitException("Patient doesnt exist"));;
+                .orElseThrow(() -> new PatientException("Patient doesnt exist"));;
 
         visit.setPatient(patient);
         visitRepository.save(visit);
