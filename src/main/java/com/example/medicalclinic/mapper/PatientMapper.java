@@ -11,6 +11,7 @@ public interface PatientMapper {
 
     @Mapping(source = "patient", target = "fullName", qualifiedByName = "toFullName")
     PatientDTO toDTO (Patient patient);
+    Patient toEntity(PatientDTO patientDTO);
 
     @Named("toFullName")
     default String mapToFullName(Patient patient) {

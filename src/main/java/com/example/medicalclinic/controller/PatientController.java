@@ -19,7 +19,7 @@ public class PatientController {
     private final PatientMapper patientMapper;
 
     @GetMapping
-    public PageableContentDTO<PatientDTO> getPatientsDTO(Pageable pageable) {
+    public PageableContentDTO<PatientDTO> getPatients(Pageable pageable) {
         return patientService.getAllPatients(pageable);
     }
 
@@ -37,7 +37,7 @@ public class PatientController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public PatientDTO addPatient(@RequestBody Patient patient) {
-        return patientMapper.toDTO(patient);
+        return patientService.addPatient(patient);
     }
 
     @PutMapping("/{email}")

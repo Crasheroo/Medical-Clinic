@@ -65,8 +65,7 @@ public class PatientService {
         existingPatient.setPassword(password);
         return patientRepository.save(existingPatient);
     }
-
-
+    
     private void updateEmailIfChanged(Patient existingPatient, Patient updatedPatient) {
         Optional.ofNullable(updatedPatient.getEmail())
                 .filter(newEmail -> !newEmail.equals(existingPatient.getEmail()))
