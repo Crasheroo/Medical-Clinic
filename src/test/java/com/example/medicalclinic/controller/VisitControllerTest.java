@@ -103,6 +103,7 @@ public class VisitControllerTest {
         LocalDateTime endTime = LocalDateTime.now().plusMinutes(60);
         CreateVisitCommand command = new CreateVisitCommand(doctorId, startTime, endTime);
 
+        when(visitService.createVisit(doctorId, startTime, endTime)).thenThrow(new DoctorException("Doctor doesnt exist"));
 
         mockMvc.perform(post("/visits")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -149,7 +149,7 @@ public class PatientControllerTest {
     }
 
     @Test
-    void removePatient_whenDeleted_CosTam() throws Exception {
+    void removePatient_whenDeleted_returnStatus200() throws Exception {
         String email = "test@example.com";
         PatientDTO patientDTO = createPatientDto(email, "ID123456");
         Patient patient = createPatient(email, "ID123456");

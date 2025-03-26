@@ -81,6 +81,7 @@ public class FacilityServiceTest {
         FacilityDTO result = facilityService.getFacilityByName(facilityName);
 
         // Then
+        assertEquals(1L, result.getId());
         assertEquals("testName", result.getFacilityName());
     }
 
