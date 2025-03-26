@@ -3,7 +3,6 @@ package com.example.medicalclinic.controller;
 import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
-import com.example.medicalclinic.model.dto.PatientDTO;
 import com.example.medicalclinic.service.DoctorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
