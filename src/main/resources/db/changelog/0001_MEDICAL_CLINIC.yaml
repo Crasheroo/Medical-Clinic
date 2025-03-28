@@ -25,141 +25,24 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: idCardNo
+                  name: id_card_no
                   type: varchar(255)
                   constraints:
                     unique: true
                     nullable: false
               - column:
-                  name: firstName
+                  name: first_name
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: lastName
+                  name: last_name
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: phoneNumber
+                  name: phone_number
                   type: varchar(255)
               - column:
                   name: birthday
                   type: date
-
-        - createTable:
-            tableName: FACILITY
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: facilityName
-                  type: varchar(255)
-                  constraints:
-                    unique: true
-                    nullable: false
-              - column:
-                  name: city
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: postcode
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: street
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: buildingNumber
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-
-        - createTable:
-            tableName: DOCTOR
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: email
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: password
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-
-        - createTable:
-            tableName: doctor_facility
-            columns:
-              - column:
-                  name: doctor_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_doctor_facility_doctor
-                    references: DOCTOR(id)
-                    deleteCascade: true
-              - column:
-                  name: facility_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_doctor_facility_facility
-                    references: FACILITY(id)
-                    deleteCascade: true
-            constraints:
-              primaryKey:
-                columnNames: doctor_id, facility_id
-                constraintName: pk_doctor_facility
-
-        - createTable:
-            tableName: VISIT
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: doctor_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_visit_doctor
-                    references: DOCTOR(id)
-              - column:
-                  name: patient_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_visit_patient
-                    references: PATIENT(id)
-              - column:
-                  name: startTime
-                  type: datetime
-                  constraints:
-                    nullable: false
-              - column:
-                  name: endTime
-                  type: datetime
-                  constraints:
-                    nullable: false

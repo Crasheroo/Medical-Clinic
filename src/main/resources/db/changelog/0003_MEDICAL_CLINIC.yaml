@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: CrasherBobi
+      changes:
+        - createTable:
+            tableName: doctor_facility
+            columns:
+              - column:
+                  name: doctor_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_doctor_facility_doctor
+                    references: DOCTOR(id)
+                    deleteCascade: true
+              - column:
+                  name: facility_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_doctor_facility_facility
+                    references: FACILITY(id)
+                    deleteCascade: true
+            constraints:
+              primaryKey:
+                columnNames: doctor_id, facility_id
+                constraintName: pk_doctor_facility
+
+        - createTable:
+            tableName: VISIT
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: doctor_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_visit_doctor
+                    references: DOCTOR(id)
+              - column:
+                  name: patient_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_visit_patient
+                    references: PATIENT(id)
+              - column:
+                  name: start_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: datetime
+                  constraints:
+                    nullable: false
