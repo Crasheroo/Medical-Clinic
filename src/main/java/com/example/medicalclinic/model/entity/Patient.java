@@ -1,19 +1,25 @@
-package com.example.medicalclinic.model;
+package com.example.medicalclinic.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "PATIENT")
 public class Patient {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true)
     private String email;
     private String password;
+    @Column(unique = true)
     private String idCardNo;
     private String firstName;
     private String lastName;
@@ -39,5 +45,23 @@ public class Patient {
         if (other.getPhoneNumber() != null) {
             this.phoneNumber = other.getPhoneNumber();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof Patient))
+            return false;
+
+        Patient other = (Patient) o;
+
+        return id != null &&
+                id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
