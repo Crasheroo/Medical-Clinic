@@ -4,8 +4,8 @@ services:
     ports:
       - "8080:2137"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:clinicdb
-      - SPRING_H2_CONSOLE_ENABLED=true
-      - SPRING_JPA_SHOW_SQL=true
-    restart: unless-stopped
+      - SPRING_PROFILES_ACTIVE=dev #aktywuje profil div
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:clinicdb #uzywa tej h2 bazy
+      - SPRING_H2_CONSOLE_ENABLED=true #wlacza konsole h2
+      - SPRING_JPA_SHOW_SQL=true #pokazuje logi zapytan SQL
+    restart: unless-stopped #automatyczny reset
