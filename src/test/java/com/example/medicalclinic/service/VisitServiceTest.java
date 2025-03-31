@@ -1,6 +1,7 @@
 package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.DoctorException;
+import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.mapper.VisitMapper;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
@@ -53,8 +54,8 @@ public class VisitServiceTest {
     void createVisit_visitExist_VisitCreated() {
         // Given
         Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30).withMinute(0);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60).withMinute(0);
+        LocalDateTime startTime = LocalDateTime.now().plusHours(1).plusMinutes(30).withMinute(0);
+        LocalDateTime endTime = LocalDateTime.now().plusHours(1).plusMinutes(60).withMinute(0);
 
         Doctor doctor = createDoctor(doctorId);
         when(doctorRepository.findById(doctorId)).thenReturn(Optional.of(doctor));
@@ -140,8 +141,8 @@ public class VisitServiceTest {
     void createVisit_notQuarterTime_throwsException() {
         // Given
         Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30).withMinute(17);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60).withMinute(32);
+        LocalDateTime startTime = LocalDateTime.now().plusHours(1).plusMinutes(30).withMinute(17);
+        LocalDateTime endTime = LocalDateTime.now().plusHours(1).plusMinutes(60).withMinute(32);
 
         // When
         VisitException exception = assertThrows(VisitException.class, () ->
@@ -199,7 +200,7 @@ public class VisitServiceTest {
         when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
 
         // When
-        VisitException exception = assertThrows(VisitException.class, () -> visitService.bookVisit(visitId, patientId));
+        PatientException exception = assertThrows(PatientException.class, () -> visitService.bookVisit(visitId, patientId));
 
         // Then
         assertEquals("Patient doesnt exist", exception.getMessage());

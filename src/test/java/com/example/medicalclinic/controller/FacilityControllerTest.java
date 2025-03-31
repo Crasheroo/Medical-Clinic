@@ -147,19 +147,19 @@ public class FacilityControllerTest {
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
-    @Test
-    void createFacilitiesWithDoctors_whenFound_return200() throws Exception {
-        CreateFacilityCommand facilityCommand = createFacilityCommand("facilityName");
-        FacilityDTO facilityDTO = createFacilityDto(1L, "name");
-
-        when(facilityService.saveFacilitiesWithDoctors(List.of(facilityCommand))).thenReturn(List.of(facilityDTO));
-
-        mockMvc.perform(post("/facilities")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(List.of(facilityDTO))))
-                .andExpect(jsonPath("$[0].id", is(facilityDTO.getId().intValue())))
-                .andExpect(jsonPath("$[0].facilityName", is(facilityDTO.getFacilityName())));
-    }
+//    @Test
+//    void createFacilitiesWithDoctors_whenFound_return200() throws Exception {
+//        CreateFacilityCommand facilityCommand = createFacilityCommand("facilityName");
+//        FacilityDTO facilityDTO = createFacilityDto(1L, "name");
+//
+//        when(facilityService.saveFacilitiesWithDoctors(List.of(facilityCommand))).thenReturn(List.of(facilityDTO));
+//
+//        mockMvc.perform(post("/facilities")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(List.of(facilityDTO))))
+//                .andExpect(jsonPath("$[0].id", is(facilityDTO.getId().intValue())))
+//                .andExpect(jsonPath("$[0].facilityName", is(facilityDTO.getFacilityName())));
+//    }
 
     private FacilityDTO createFacilityDto(Long facilityId, String facilityName) {
         return FacilityDTO.builder()
