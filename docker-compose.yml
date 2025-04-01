@@ -1,11 +1,34 @@
-services:
-  medical-clinic:
-    build: .
-    ports:
-      - "8080:2137"
+services: # kontener z konfiguracja
+  db: # nazwa serwisu z db postgresa
+    image: postgres:latest # obraz postgresa
+    container_name: medicalclinic-db # nazwa kontenera
+    environment: # zmienne srodowiskowe
+      POSTGRES_DB: medicalclinic # nazwa bazy danych
+      POSTGRES_USER: postgres # nazwa usera
+      POSTGRES_PASSWORD: postgres  # haslo do db
+    ports: # mapowanie portow
+      - "5432:5432"
+    volumes: # giga dobre przechowywaniei dancych bo nie gina po resecie kontenera
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medicalclinic-net # przypisanie do sieci
+
+  app: # nazwa serwisu z aplikacja
+    build: . # buduje obraz na podstawie dockerfile z tego katalogu
+    container_name: medicalclinic-app #nazwa kontenera
+    depends_on: # na czym polega (kolejnosc uruchamiania)
+      - db
+    ports: # mapowanie portow
+      - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev #aktywuje profil div
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb #uzywa tej h2 bazy
-      - SPRING_H2_CONSOLE_ENABLED=true #wlacza konsole h2
-      - SPRING_JPA_SHOW_SQL=true #pokazuje logi zapytan SQL
-    restart: unless-stopped #automatyczny reset
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/medicalclinic
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    networks:
+      - medicalclinic-net # przypisanie do tej samej sieci zeby mogl sie polaczyc z db
+
+volumes:
+  postgres_data: # definicja volume do przechowywania db
+
+networks:
+  medicalclinic-net: #definicja (prywatnej) sieci Dockeraw ktorej sa dwa serwisy
