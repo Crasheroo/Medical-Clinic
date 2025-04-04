@@ -8,7 +8,7 @@ services: # kontener z konfiguracja
       POSTGRES_PASSWORD: postgres  # haslo do db
     ports: # mapowanie portow
       - "5432:5432"
-    volumes: # giga dobre przechowywaniei dancych bo nie gina po resecie kontenera
+    volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - medicalclinic-net # przypisanie do sieci
@@ -38,13 +38,13 @@ services: # kontener z konfiguracja
     ports:
       - "1234:1234"
     volumes:
-      - ./servers.json:/pgadmin4/servers.json
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       - medicalclinic-net
 
-
-volumes:
-  postgres_data: # definicja volume do przechowywania db
-
 networks:
   medicalclinic-net: #definicja (prywatnej) sieci Dockeraw ktorej sa dwa serwisy
+
+volumes:
+  postgres_data:
+  pgadmin_data:
