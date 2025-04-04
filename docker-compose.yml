@@ -24,8 +24,24 @@ services: # kontener z konfiguracja
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/medicalclinic
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      PGADMIN_LISTEN_PORT: 8080
     networks:
       - medicalclinic-net # przypisanie do tej samej sieci zeby mogl sie polaczyc z db
+
+  pgadmin:
+    image: elestio/pgadmin:latest
+    container_name: pgadmin
+    environment: # zmienne srodowiskowe
+      PGADMIN_DEFAULT_EMAIL: admin@email.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 1234
+    ports:
+      - "1234:1234"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - medicalclinic-net
+
 
 volumes:
   postgres_data: # definicja volume do przechowywania db

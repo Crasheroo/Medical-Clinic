@@ -2,14 +2,9 @@ package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
-import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
-import com.example.medicalclinic.model.dto.PatientDTO;
-import com.example.medicalclinic.model.entity.Doctor;
-import com.example.medicalclinic.model.entity.Facility;
-import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.service.DoctorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -21,10 +16,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashSet;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -213,7 +208,7 @@ public class DoctorControllerTest {
         when(doctorService.assignDoctorToFacility(doctorId, facilityId)).thenReturn(doctorDTO);
 
         mockMvc.perform(post("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(doctorId.intValue())))
                 .andExpect(jsonPath("$.facilityIds[0]", is(facilityId.intValue())));
@@ -257,7 +252,7 @@ public class DoctorControllerTest {
         doNothing().when(doctorService).removeFacilityFromDoctor(doctorId, facilityId);
 
         mockMvc.perform(delete("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -297,3 +292,4 @@ public class DoctorControllerTest {
                 .build();
     }
 }
+
