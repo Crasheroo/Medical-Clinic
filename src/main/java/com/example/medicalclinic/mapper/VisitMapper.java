@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface VisitMapper {
     @Mapping(target = "isAvailable", source = "visit", qualifiedByName = "mapIsAvailable")
@@ -16,6 +18,7 @@ public interface VisitMapper {
     @Mapping(target = "endTime", source = "endTime")
     @Mapping(target = "doctor", source = "doctor", qualifiedByName = "mapDoctor")
     VisitDTO toDto(Visit visit);
+    List<VisitDTO> toDto(List<Visit> visits);
 
     @Named("mapIsAvailable")
     default boolean mapIsAvailable(Visit visit) {

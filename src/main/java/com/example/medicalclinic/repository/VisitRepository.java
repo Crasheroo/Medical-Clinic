@@ -9,4 +9,7 @@ import java.util.Optional;
 
 public interface VisitRepository extends JpaRepository<Visit, Long> {
     List<Visit> findByDoctorId(Long doctorId);
+    Optional<Visit> findByIdAndPatientIsNull(Long id);
+    List<Visit> findAllByPatientEmail(String patientEmail);
+    List<Visit> findByDoctorSpecialtyAndStartTimeBetweenAndPatientIsNull(String specialty, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

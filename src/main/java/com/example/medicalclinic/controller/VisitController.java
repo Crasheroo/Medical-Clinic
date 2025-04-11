@@ -9,6 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -30,5 +33,27 @@ public class VisitController {
     @GetMapping
     public PageableContentDTO<VisitDTO> getVisits(Pageable pageable) {
         return visitService.getVisits(pageable);
+    }
+
+    @PostMapping("/{id}/reserve")
+    public void reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
+        visitService.reserveVisit(id, patientEmail);
+    }
+
+    @GetMapping("/my-visits")
+    public List<VisitDTO> getMyVisits(@RequestParam String patientEmail) {
+        return visitService.getVisitsByPatient(patientEmail);
+    }
+
+    @GetMapping("/doctor/{doctorId}/available")
+    public List<VisitDTO> getDoctorAvailableVisits(@PathVariable Long doctorId) {
+        return visitService.getAvailableVisitsByDoctor(doctorId);
+    }
+
+    @GetMapping("/available/by-specialty")
+    public List<VisitDTO> getAvailableBySpecialtyAndDate(
+            @RequestParam String specialty,
+            @RequestParam LocalDateTime date) {
+        return visitService.getAvailableVisitsBySpecialtyAndDay(specialty, date);
     }
 }

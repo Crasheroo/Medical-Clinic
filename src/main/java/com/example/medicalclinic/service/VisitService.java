@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,6 +77,34 @@ public class VisitService {
                 .toList();
 
         return PageableContentDTO.from(visitPage, visits);
+    }
+
+    @Transactional
+    public Visit reserveVisit(Long visitId, String patientEmail) {
+        Visit visit = visitRepository.findByIdAndPatientIsNull(visitId)
+                .orElseThrow(() -> new VisitException("Visit doesnt exist"));
+
+        Patient patient = patientRepository.findByEmail(patientEmail)
+                .orElseThrow(() -> new PatientException("Patient doesnt exist"));
+
+        visit.setPatient(patient);
+        return visitRepository.save(visit);
+    }
+
+    public List<VisitDTO> getVisitsByPatient(String patientEmail) {
+        return visitMapper.toDto(visitRepository.findAllByPatientEmail(patientEmail));
+    }
+
+    public List<VisitDTO> getAvailableVisitsByDoctor(Long doctorId) {
+        List<Visit> visits = visitRepository.findByDoctorId(doctorId);
+        return visitMapper.toDto(visits);
+    }
+
+    public List<VisitDTO> getAvailableVisitsBySpecialtyAndDay(String speciality, LocalDateTime date) {
+        LocalDateTime startOfDay = date.plusDays(1);
+        LocalDateTime endOfDay = date.plusDays(2);
+        List<Visit> visits = visitRepository.findByDoctorSpecialtyAndStartTimeBetweenAndPatientIsNull(speciality, startOfDay, endOfDay);
+        return visitMapper.toDto(visits);
     }
 
     private void validateTimes(LocalDateTime startTime, LocalDateTime endTime) {
