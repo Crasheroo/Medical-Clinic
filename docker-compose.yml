@@ -43,8 +43,8 @@ services: # kontener z konfiguracja
       - medicalclinic-net
 
 networks:
-  medicalclinic-net: #definicja (prywatnej) sieci Dockeraw ktorej sa dwa serwisy
-
+  medicalclinic-net:
+    external: true
 volumes:
   postgres_data:
   pgadmin_data:

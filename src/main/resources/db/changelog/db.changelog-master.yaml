@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/0002_MEDICAL_CLINIC.yaml
   - include:
       file: db/changelog/0003_MEDICAL_CLINIC.yaml
+  - include:
+      file: db/changelog/0004_MEDICAL_CLINIC.yaml

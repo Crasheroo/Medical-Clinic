@@ -46,6 +46,7 @@ public class VisitService {
                 .doctor(doctor)
                 .startTime(startTime)
                 .endTime(endTime)
+                .patient(null)
                 .build();
 
         visitRepository.save(visit);
@@ -80,8 +81,8 @@ public class VisitService {
     }
 
     @Transactional
-    public Visit reserveVisit(Long visitId, String patientEmail) {
-        Visit visit = visitRepository.findByIdAndPatientIsNull(visitId)
+    public Visit reserveVisit(Long id, String patientEmail) {
+        Visit visit = visitRepository.findById(id)
                 .orElseThrow(() -> new VisitException("Visit doesnt exist"));
 
         Patient patient = patientRepository.findByEmail(patientEmail)

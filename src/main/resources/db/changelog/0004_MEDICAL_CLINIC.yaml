@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: CrasherBobi
+      changes:
+        - dropNotNullConstraint:
+            tableName: VISIT
+            columnName: patient_id
+            columnDataType: bigint

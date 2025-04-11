@@ -3,6 +3,7 @@ package com.example.medicalclinic.controller;
 import com.example.medicalclinic.model.CreateVisitCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
+import com.example.medicalclinic.model.entity.Visit;
 import com.example.medicalclinic.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +37,8 @@ public class VisitController {
     }
 
     @PostMapping("/{id}/reserve")
-    public void reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
-        visitService.reserveVisit(id, patientEmail);
+    public Visit reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
+        return visitService.reserveVisit(id, patientEmail);
     }
 
     @GetMapping("/my-visits")
