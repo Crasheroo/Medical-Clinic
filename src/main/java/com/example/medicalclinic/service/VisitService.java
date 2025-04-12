@@ -6,6 +6,7 @@ import com.example.medicalclinic.exception.VisitException;
 import com.example.medicalclinic.mapper.VisitMapper;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
+import com.example.medicalclinic.model.dto.VisitFilterDTO;
 import com.example.medicalclinic.model.entity.Doctor;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.model.entity.Visit;
@@ -70,14 +71,22 @@ public class VisitService {
         return visitMapper.toDto(visit);
     }
 
-    @Transactional
-    public PageableContentDTO<VisitDTO> getVisits(Pageable pageable) {
-        Page<Visit> visitPage = visitRepository.findAll(pageable);
-        List<VisitDTO> visits = visitPage.getContent().stream()
-                .map(visitMapper::toDto)
-                .toList();
+    public PageableContentDTO<VisitDTO> getVisits(VisitFilterDTO filter, Pageable pageable) {
+        if (filter.getPatientEmail() != null) {
+            return getPatientVisits(filter.getPatientEmail(), pageable);
+        }
 
-        return PageableContentDTO.from(visitPage, visits);
+        if (filter.getDoctorId() != null) {
+            return filter.isOnlyAvailable()
+                    ? getAvailableVisitsByDoctor(filter.getDoctorId(), pageable)
+                    : getAllVisitsByDoctor(filter.getDoctorId(), pageable);
+        }
+
+        if (filter.getSpeciality() != null && filter.getDate() != null) {
+            return getAvailableVisitsBySpecialtyAndDay(filter.getSpeciality(), filter.getDate(), pageable);
+        }
+
+        return getAllVisits(pageable);
     }
 
     @Transactional
@@ -90,22 +99,6 @@ public class VisitService {
 
         visit.setPatient(patient);
         return visitRepository.save(visit);
-    }
-
-    public List<VisitDTO> getVisitsByPatient(String patientEmail) {
-        return visitMapper.toDto(visitRepository.findAllByPatientEmail(patientEmail));
-    }
-
-    public List<VisitDTO> getAvailableVisitsByDoctor(Long doctorId) {
-        List<Visit> visits = visitRepository.findByDoctorId(doctorId);
-        return visitMapper.toDto(visits);
-    }
-
-    public List<VisitDTO> getAvailableVisitsBySpecialtyAndDay(String speciality, LocalDateTime date) {
-        LocalDateTime startOfDay = date.plusDays(1);
-        LocalDateTime endOfDay = date.plusDays(2);
-        List<Visit> visits = visitRepository.findByDoctorSpecialtyAndStartTimeBetweenAndPatientIsNull(speciality, startOfDay, endOfDay);
-        return visitMapper.toDto(visits);
     }
 
     private void validateTimes(LocalDateTime startTime, LocalDateTime endTime) {
@@ -124,5 +117,40 @@ public class VisitService {
         return visitRepository.findByDoctorId(doctorId).stream()
                 .filter(visit -> visit.getStartTime().isBefore(endTime) && visit.getEndTime().isAfter(startTime))
                 .toList();
+    }
+
+    private PageableContentDTO<VisitDTO> getPatientVisits(String patientEmail, Pageable pageable) {
+        Page<Visit> visitPage = visitRepository.findAllByPatientEmail(patientEmail, pageable);
+        return convertToPageableDTO(visitPage);
+    }
+
+    private PageableContentDTO<VisitDTO> getAvailableVisitsByDoctor(Long doctorId, Pageable pageable) {
+        Page<Visit> visitPage = visitRepository.findByDoctorIdAndPatientIsNull(doctorId, pageable);
+        return convertToPageableDTO(visitPage);
+    }
+
+    private PageableContentDTO<VisitDTO> getAvailableVisitsBySpecialtyAndDay(String specialty, LocalDate date, Pageable pageable) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+        Page<Visit> visitPage = visitRepository.findByDoctorSpecialtyAndStartTimeBetweenAndPatientIsNull(
+                specialty, startOfDay, endOfDay, pageable);
+        return convertToPageableDTO(visitPage);
+    }
+
+    private PageableContentDTO<VisitDTO> getAllVisitsByDoctor(Long doctorId, Pageable pageable) {
+        Page<Visit> visitPage = visitRepository.findByDoctorId(doctorId, pageable);
+        return convertToPageableDTO(visitPage);
+    }
+
+    private PageableContentDTO<VisitDTO> getAllVisits(Pageable pageable) {
+        Page<Visit> visitPage = visitRepository.findAll(pageable);
+        return convertToPageableDTO(visitPage);
+    }
+
+    private PageableContentDTO<VisitDTO> convertToPageableDTO(Page<Visit> visitPage) {
+        List<VisitDTO> visits = visitPage.getContent().stream()
+                .map(visitMapper::toDto)
+                .toList();
+        return PageableContentDTO.from(visitPage, visits);
     }
 }

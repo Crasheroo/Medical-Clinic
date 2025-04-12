@@ -44,7 +44,6 @@ services: # kontener z konfiguracja
 
 networks:
   medicalclinic-net:
-    external: true
 volumes:
   postgres_data:
   pgadmin_data:
