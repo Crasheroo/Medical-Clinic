@@ -42,8 +42,20 @@ services: # kontener z konfiguracja
     networks:
       - medicalclinic-net
 
+  proxy:
+    image: medical-clinic-proxy
+    container_name: proxy
+    depends_on:
+      - app
+    ports:
+      - "8081:8081"
+    networks:
+      - medicalclinic-net
+
 networks:
   medicalclinic-net:
+    driver: bridge
+    name: medicalclinic-net
 volumes:
   postgres_data:
   pgadmin_data:
