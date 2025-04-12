@@ -1,5 +1,6 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.model.BookVisitCommand;
 import com.example.medicalclinic.model.CreateVisitCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
@@ -8,14 +9,8 @@ import com.example.medicalclinic.model.entity.Visit;
 import com.example.medicalclinic.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @RequiredArgsConstructor
 @RestController
@@ -30,32 +25,22 @@ public class VisitController {
     }
 
     @PostMapping("/book")
-    public VisitDTO bookVisit(@RequestParam Long visitId, @RequestParam Long patientId) {
-        return visitService.bookVisit(visitId, patientId);
+    public VisitDTO bookVisit(@RequestBody BookVisitCommand request) {
+        return visitService.bookVisit(request.visitId(), request.patientid());
     }
 
     @GetMapping
-    public PageableContentDTO<VisitDTO> getVisits(
-            @RequestParam(required = false) Long doctorId,
-            @RequestParam(required = false) String specialty,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(required = false, defaultValue = "false") boolean onlyAvailable,
-            @RequestParam(required = false) String patientEmail,
-            Pageable pageable) {
-
-        VisitFilterDTO filter = VisitFilterDTO.builder()
-                .doctorId(doctorId)
-                .speciality(specialty)
-                .date(date)
-                .onlyAvailable(onlyAvailable)
-                .patientEmail(patientEmail)
-                .build();
-
+    public PageableContentDTO<VisitDTO> getVisits(VisitFilterDTO filter, Pageable pageable) {
         return visitService.getVisits(filter, pageable);
     }
 
     @PostMapping("/{id}/reserve")
     public Visit reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
         return visitService.reserveVisit(id, patientEmail);
+    }
+
+    @DeleteMapping("/cancel/{id}")
+    public void cancelVisit(@PathVariable Long id, @RequestParam String doctorEmail) {
+        visitService.cancelVisit(id, doctorEmail);
     }
 }
