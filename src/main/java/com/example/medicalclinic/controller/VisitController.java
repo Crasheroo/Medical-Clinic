@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/visits")
@@ -30,7 +32,7 @@ public class VisitController {
     }
 
     @GetMapping
-    public PageableContentDTO<VisitDTO> getVisits(VisitFilterDTO filter, Pageable pageable) {
+    public PageableContentDTO<VisitDTO> getVisits(VisitFilterDTO filter , Pageable pageable) {
         return visitService.getVisits(filter, pageable);
     }
 
