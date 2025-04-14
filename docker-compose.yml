@@ -54,8 +54,6 @@ services: # kontener z konfiguracja
 
 networks:
   medicalclinic-net:
-    driver: bridge
-    name: medicalclinic-net
 volumes:
   postgres_data:
   pgadmin_data:

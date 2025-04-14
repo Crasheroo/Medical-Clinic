@@ -27,9 +27,6 @@ public class Doctor {
     )
     private Set<Facility> facilities = new HashSet<>();
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Appointment> appointments = new ArrayList<>();
-
     public void updateFrom(String newEmail, String newPassword) {
         Optional.ofNullable(newEmail)
                 .filter(email -> !email.equals(this.email))

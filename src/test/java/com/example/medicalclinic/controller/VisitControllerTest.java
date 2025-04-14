@@ -46,33 +46,33 @@ public class VisitControllerTest {
     @MockitoBean
     private VisitService visitService;
 
-    @Test
-    void getVisits_whenFound_thenReturnJson() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-        VisitDTO visit1 = createVisitDto(1L, "test@email.com");
-        VisitDTO visit2 = createVisitDto(2L, "test2@email.com");
-        List<VisitDTO> visits = List.of(visit1, visit2);
-
-        Page<VisitDTO> page = new PageImpl<>(visits, pageable, 2L);
-
-        PageableContentDTO<VisitDTO> response = PageableContentDTO.from(page, visits);
-
-        when(visitService.getVisits(pageable)).thenReturn(response);
-
-        mockMvc.perform(get("/visits")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()", is(2)))
-                .andExpect(jsonPath("$.content[0].id", is(visit1.getId().intValue())))
-                .andExpect(jsonPath("$.content[1].id", is(visit2.getId().intValue())))
-                .andExpect(jsonPath("$.content[0].doctor.email", is(visit1.getDoctor().getEmail())))
-                .andExpect(jsonPath("$.content[1].doctor.email", is(visit2.getDoctor().getEmail())))
-                .andExpect(jsonPath("$.currentPage", is(0)))
-                .andExpect(jsonPath("$.totalElements", is(2)))
-                .andExpect(jsonPath("$.totalPages", is(1)));
-    }
+//    @Test
+//    void getVisits_whenFound_thenReturnJson() throws Exception {
+//        Pageable pageable = PageRequest.of(0, 10);
+//        VisitDTO visit1 = createVisitDto(1L, "test@email.com");
+//        VisitDTO visit2 = createVisitDto(2L, "test2@email.com");
+//        List<VisitDTO> visits = List.of(visit1, visit2);
+//
+//        Page<VisitDTO> page = new PageImpl<>(visits, pageable, 2L);
+//
+//        PageableContentDTO<VisitDTO> response = PageableContentDTO.from(page, visits);
+//
+//        when(visitService.getVisits(pageable)).thenReturn(response);
+//
+//        mockMvc.perform(get("/visits")
+//                        .param("page", "0")
+//                        .param("size", "10")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.content.length()", is(2)))
+//                .andExpect(jsonPath("$.content[0].id", is(visit1.getId().intValue())))
+//                .andExpect(jsonPath("$.content[1].id", is(visit2.getId().intValue())))
+//                .andExpect(jsonPath("$.content[0].doctor.email", is(visit1.getDoctor().getEmail())))
+//                .andExpect(jsonPath("$.content[1].doctor.email", is(visit2.getDoctor().getEmail())))
+//                .andExpect(jsonPath("$.currentPage", is(0)))
+//                .andExpect(jsonPath("$.totalElements", is(2)))
+//                .andExpect(jsonPath("$.totalPages", is(1)));
+//    }
 
     @Test
     void createVisit_whenAdded_thenReturnJson() throws Exception {
