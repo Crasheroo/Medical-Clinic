@@ -2,7 +2,6 @@ package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
-import com.example.medicalclinic.mapper.FacilityMapper;
 import com.example.medicalclinic.model.CreateFacilityCommand;
 import com.example.medicalclinic.service.FacilityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +24,6 @@ import java.util.List;
 @RequestMapping("/facilities")
 public class FacilityController {
     private final FacilityService facilityService;
-    private final FacilityMapper facilityMapper;
 
     @Operation(summary = "Get facilities")
     @ApiResponses(value = {
@@ -71,7 +69,7 @@ public class FacilityController {
     })
     @PutMapping("/{facilityName}")
     public FacilityDTO editFacility(@PathVariable String facilityName, @RequestBody FacilityDTO facility) {
-        return facilityService.updateByName(facilityName, facilityMapper.toEntity(facility));
+        return facilityService.updateByName(facilityName, facility);
     }
 
     @Operation(summary = "Create facilities with or without doctors")

@@ -46,10 +46,10 @@ public class FacilityService {
         facilityRepository.delete(facility);
     }
 
-    public FacilityDTO updateByName(String facilityName, Facility updatedFacility) {
+    public FacilityDTO updateByName(String facilityName, FacilityDTO updatedFacility) {
         Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
                 .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
-        existingFacility.updateFrom(updatedFacility);
+        existingFacility.updateFrom(facilityMapper.toEntity(updatedFacility));
         return facilityMapper.toDto(facilityRepository.save(existingFacility));
     }
 
