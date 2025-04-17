@@ -48,7 +48,7 @@ public class VisitController {
     })
     @PostMapping("/book")
     public VisitDTO bookVisit(@RequestBody BookVisitCommand request) {
-        return visitService.bookVisit(request.visitId(), request.patientid());
+        return visitService.bookVisit(request.visitId(), request.patientId());
     }
 
     @Operation(summary = "Get visits")
