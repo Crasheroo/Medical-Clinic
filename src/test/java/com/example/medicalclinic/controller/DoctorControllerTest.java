@@ -15,8 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -85,7 +84,7 @@ public class DoctorControllerTest {
         String email = "test@email.com";
         String errorMessage = "Doctor doesnt exist";
 
-        when(doctorService.getDoctorByEmail(email)).thenThrow(new DoctorException(errorMessage));
+        when(doctorService.getDoctorByEmail(email)).thenThrow(new DoctorException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/doctors/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -100,7 +99,7 @@ public class DoctorControllerTest {
         String email = "email@email.com";
         String password = "password";
 
-        CreateDoctorCommand command = new CreateDoctorCommand(doctorId, email, password);
+        CreateDoctorCommand command = new CreateDoctorCommand(email, password);
         DoctorDTO doctor = createDoctorDto(doctorId, email);
 
         when(doctorService.addDoctor(command)).thenReturn(doctor);
@@ -110,27 +109,25 @@ public class DoctorControllerTest {
                         .content(objectMapper.writeValueAsString(command)))
                 .andExpect(status().isCreated())
                 .andDo(print())
-                .andExpect(jsonPath("$.id", is(doctor.getId().intValue())))
                 .andExpect(jsonPath("$.email", is(email)))
                 .andExpect(jsonPath("$.facilityIds").isArray());
     }
 
     @Test
     void addDoctor_doctorAlreadyExist_throwException() throws Exception {
-        Long doctorId = 1L;
         String email = "email@email.com";
         String password = "password";
         String errorMessage = "Doctor already exist";
 
-        CreateDoctorCommand command = new CreateDoctorCommand(doctorId, email, password);
+        CreateDoctorCommand command = new CreateDoctorCommand(email, password);
 
-        when(doctorService.addDoctor(any())).thenThrow(new DoctorException(errorMessage));
+        when(doctorService.addDoctor(any())).thenThrow(new DoctorException(errorMessage, HttpStatus.CONFLICT));
 
         mockMvc.perform(post("/doctors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(command)))
                 .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("CONFLICT")))
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
@@ -141,7 +138,7 @@ public class DoctorControllerTest {
         String newEmail = "updated@email.com";
         String newPassword = "newPassword";
 
-        CreateDoctorCommand doctorCommand = new CreateDoctorCommand(doctorId, newEmail, newPassword);
+        CreateDoctorCommand doctorCommand = new CreateDoctorCommand(newEmail, newPassword);
         DoctorDTO doctor = createDoctorDto(doctorId, newEmail);
 
         when(doctorService.editDoctorByEmail(email, doctorCommand)).thenReturn(doctor);
@@ -150,7 +147,6 @@ public class DoctorControllerTest {
                         .content(objectMapper.writeValueAsString(doctorCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(doctorId.intValue())))
                 .andExpect(jsonPath("$.email", is(newEmail)));
     }
 
@@ -158,15 +154,15 @@ public class DoctorControllerTest {
     void editDoctor_doctorNotFound_throwException() throws Exception {
         String existingEmail = "doctor@example.com";
         String newEmail = "taken@email.com";
-        CreateDoctorCommand command = new CreateDoctorCommand(1L, newEmail, "password");
+        CreateDoctorCommand command = new CreateDoctorCommand( newEmail, "password");
 
-        when(doctorService.editDoctorByEmail(existingEmail, command)).thenThrow(new DoctorException("Email is taken"));
+        when(doctorService.editDoctorByEmail(existingEmail, command)).thenThrow(new DoctorException("Email is taken", HttpStatus.CONFLICT));
 
         mockMvc.perform(put("/doctors/{email}", existingEmail)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(command)))
                 .andExpect(jsonPath("$.message", is("Email is taken")))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("CONFLICT")))
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
@@ -188,7 +184,7 @@ public class DoctorControllerTest {
         String email = "test@email.com";
         String errorMessage = "Doctor doesnt exist";
 
-        doThrow(new DoctorException(errorMessage)).when(doctorService).removeDoctorByEmail(email);
+        doThrow(new DoctorException(errorMessage, HttpStatus.NOT_FOUND)).when(doctorService).removeDoctorByEmail(email);
 
         mockMvc.perform(delete("/doctors/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -220,7 +216,7 @@ public class DoctorControllerTest {
         Long facilityId = 2L;
         String errorMessage = "Doctor doesnt exist";
 
-        when(doctorService.assignDoctorToFacility(doctorId, facilityId)).thenThrow(new DoctorException(errorMessage));
+        when(doctorService.assignDoctorToFacility(doctorId, facilityId)).thenThrow(new DoctorException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(post("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -235,7 +231,7 @@ public class DoctorControllerTest {
         Long facilityId = 2L;
         String errorMessage = "Facility doesnt exist";
 
-        when(doctorService.assignDoctorToFacility(doctorId, facilityId)).thenThrow(new FacilityException(errorMessage));
+        when(doctorService.assignDoctorToFacility(doctorId, facilityId)).thenThrow(new FacilityException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(post("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -262,7 +258,7 @@ public class DoctorControllerTest {
         Long doctorId = 1L;
         Long facilityId = 1L;
 
-        doThrow(new FacilityException(errorMessage)).when(doctorService).removeFacilityFromDoctor(doctorId, facilityId);
+        doThrow(new FacilityException(errorMessage, HttpStatus.NOT_FOUND)).when(doctorService).removeFacilityFromDoctor(doctorId, facilityId);
 
         mockMvc.perform(delete("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId))
                 .andExpect(status().isNotFound())
@@ -276,7 +272,7 @@ public class DoctorControllerTest {
         Long doctorId = 1L;
         Long facilityId = 1L;
 
-        doThrow(new DoctorException(errorMessage)).when(doctorService).removeFacilityFromDoctor(doctorId, facilityId);
+        doThrow(new DoctorException(errorMessage, HttpStatus.NOT_FOUND)).when(doctorService).removeFacilityFromDoctor(doctorId, facilityId);
 
         mockMvc.perform(delete("/doctors/{doctorId}/facilities/{facilityId}", doctorId, facilityId))
                 .andExpect(status().isNotFound())

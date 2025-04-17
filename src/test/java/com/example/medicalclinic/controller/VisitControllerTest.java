@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -179,7 +180,7 @@ public class VisitControllerTest {
         when(visitService.bookVisit(
                 eq(command.visitId()),
                 eq(command.patientId())
-        )).thenThrow(new VisitException("Visit not found"));
+        )).thenThrow(new VisitException("Visit not found", HttpStatus.NOT_FOUND));
 
         // When & Then
         mockMvc.perform(post("/visits/book")

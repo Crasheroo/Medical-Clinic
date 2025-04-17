@@ -1,6 +1,5 @@
 package com.example.medicalclinic.service;
 
-import com.example.medicalclinic.exception.DoctorException;
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.model.CreateDoctorCommand;
 import com.example.medicalclinic.model.dto.FacilityDTO;
@@ -14,6 +13,7 @@ import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,18 +37,18 @@ public class FacilityService {
 
     public FacilityDTO getFacilityByName(String facilityName) {
         return facilityMapper.toDto(facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist")));
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND)));
     }
 
     public void removeFacilityByName(String facilityName) {
         Facility facility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
         facilityRepository.delete(facility);
     }
 
     public FacilityDTO updateByName(String facilityName, Facility updatedFacility) {
         Facility existingFacility = facilityRepository.findByFacilityName(facilityName)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
         existingFacility.updateFrom(updatedFacility);
         return facilityMapper.toDto(facilityRepository.save(existingFacility));
     }

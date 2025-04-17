@@ -2,24 +2,21 @@ package com.example.medicalclinic.service;
 
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
+import com.example.medicalclinic.model.CreatePatientCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.PatientDTO;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.repository.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -156,10 +153,16 @@ public class PatientServiceTest {
     @Test
     void addPatient_PatientExists_PatientAdded() {
         // Given
-        Patient patient = createPatient(1L, "name", "surname", "email@email.com", "12345", "123", LocalDate.of(2001, 01, 01));
+        CreatePatientCommand patient = CreatePatientCommand.builder()
+                .firstName("name")
+                .lastName("surname")
+                .idCardNo("12345")
+                .phoneNumber("123")
+                .birthday(LocalDate.of(2001, 01, 01))
+                .build();
         Patient savedPatient = createPatient(1L, "name", "surname", "email@email.com", "12345", "123", LocalDate.of(2001, 01, 01));
-        when(patientRepository.findByEmail(patient.getEmail())).thenReturn(Optional.empty());
-        when(patientRepository.findByIdCardNo(patient.getIdCardNo())).thenReturn(Optional.empty());
+        when(patientRepository.findByEmail(patient.email())).thenReturn(Optional.empty());
+        when(patientRepository.findByIdCardNo(patient.idCardNo())).thenReturn(Optional.empty());
         when(patientRepository.save(any())).thenReturn(savedPatient);
 
         // When
@@ -177,27 +180,39 @@ public class PatientServiceTest {
     @Test
     void addPatient_emailAlreadyExists_throwsException() {
         // Given
-        Patient patient = createPatient(1L, "name", "surname", "email@email.com", "123");
-        when(patientRepository.findByEmail(patient.getEmail())).thenReturn(Optional.of(Patient.builder().build()));
+        CreatePatientCommand patient = CreatePatientCommand.builder()
+                .firstName("name")
+                .lastName("surname")
+                .idCardNo("12345")
+                .phoneNumber("123")
+                .birthday(LocalDate.of(2001, 01, 01))
+                .build();
+        when(patientRepository.findByEmail(patient.email())).thenReturn(Optional.of(Patient.builder().build()));
 
         // When
         PatientException exception = assertThrows(PatientException.class, () -> patientService.addPatient(patient));
 
         // Then
-        assertEquals("Patient with email: " + patient.getEmail() + " already exists", exception.getMessage());
+        assertEquals("Patient with email: " + patient.email() + " already exists", exception.getMessage());
     }
 
     @Test
     void addPatient_idCardAlreadyExists_throwsException() {
         // Given
-        Patient patient = createPatient(1L, "name", "surname", "email@email.com", "123");
-        when(patientRepository.findByIdCardNo(patient.getIdCardNo())).thenReturn(Optional.of(Patient.builder().build()));
+        CreatePatientCommand patient = CreatePatientCommand.builder()
+                .firstName("name")
+                .lastName("surname")
+                .idCardNo("12345")
+                .phoneNumber("123")
+                .birthday(LocalDate.of(2001, 01, 01))
+                .build();
+        when(patientRepository.findByIdCardNo(patient.idCardNo())).thenReturn(Optional.of(Patient.builder().build()));
 
         // When
         PatientException exception = assertThrows(PatientException.class, () -> patientService.addPatient(patient));
 
         // Then
-        assertEquals("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists", exception.getMessage());
+        assertEquals("Patient with IdCardNo: " + patient.idCardNo() + " already exists", exception.getMessage());
     }
 
     @Test
@@ -250,25 +265,6 @@ public class PatientServiceTest {
                 .build();
     }
 
-    private Patient createPatient(String firstName, String lastName, String email, String idCardNo) {
-        return Patient.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .idCardNo(idCardNo)
-                .email(email)
-                .build();
-    }
-
-    private Patient createPatient(Long id, String firstName, String lastName, String email, String idCardNo) {
-        return Patient.builder()
-                .id(id)
-                .firstName(firstName)
-                .lastName(lastName)
-                .idCardNo(idCardNo)
-                .email(email)
-                .build();
-    }
-
     private Patient createPatient(Long id, String firstName, String lastName, String email, String idCardNo, String phoneNumber, LocalDate birthday) {
         return Patient.builder()
                 .id(id)
@@ -278,15 +274,6 @@ public class PatientServiceTest {
                 .idCardNo(idCardNo)
                 .phoneNumber(phoneNumber)
                 .birthday(birthday)
-                .build();
-    }
-
-    private PatientDTO createPatientDto(Long id, String firstName, String lastName, String email, String idCardNo) {
-        return PatientDTO.builder()
-                .id(id)
-                .fullName(firstName + lastName)
-                .email(email)
-                .idCardNo(idCardNo)
                 .build();
     }
 }

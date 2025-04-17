@@ -13,6 +13,7 @@ import com.example.medicalclinic.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +37,14 @@ public class DoctorService {
 
     public DoctorDTO getDoctorByEmail(String email) {
         return doctorMapper.toDTO(doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist")));
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist", HttpStatus.NOT_FOUND)));
     }
 
     @Transactional
     public DoctorDTO addDoctor(CreateDoctorCommand doctor) {
         doctorRepository.findByEmail(doctor.email())
                 .ifPresent(existing -> {
-                    throw new DoctorException("Doctor with email: " + doctor.email() + " already exists");
+                    throw new DoctorException("Doctor with email: " + doctor.email() + " already exists", HttpStatus.CONFLICT);
                 });
         return doctorMapper.toDTO(doctorRepository.save(doctorMapper.toEntity(doctor)));
     }
@@ -51,7 +52,7 @@ public class DoctorService {
     @Transactional
     public void removeDoctorByEmail(String email) {
         Doctor doctor = doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist", HttpStatus.NOT_FOUND));
         doctorRepository.delete(doctor);
     }
 
@@ -61,15 +62,15 @@ public class DoctorService {
                     doctor.updateFrom(command.email(), command.password());
                     return doctorMapper.toDTO(doctorRepository.save(doctor));
                 })
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist", HttpStatus.NOT_FOUND));
     }
 
     @Transactional
     public DoctorDTO assignDoctorToFacility(Long doctorId, Long facilityId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist", HttpStatus.NOT_FOUND));
         Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
         doctor.getFacilities().add(facility);
         return doctorMapper.toDTO(doctorRepository.save(doctor));
     }
@@ -77,9 +78,9 @@ public class DoctorService {
     @Transactional
     public void removeFacilityFromDoctor(Long doctorId, Long facilityId) {
         Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new DoctorException("Doctor doesnt exist"));
+                .orElseThrow(() -> new DoctorException("Doctor doesnt exist", HttpStatus.NOT_FOUND));
         Facility facility = facilityRepository.findById(facilityId)
-                .orElseThrow(() -> new FacilityException("Facility doesnt exist"));
+                .orElseThrow(() -> new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
 
         doctor.getFacilities().remove(facility);
         doctorRepository.save(doctor);

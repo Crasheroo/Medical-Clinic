@@ -1,5 +1,6 @@
 package com.example.medicalclinic.controller;
 
+import com.example.medicalclinic.model.CreatePatientCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.ChangePasswordCommand;
 import com.example.medicalclinic.model.entity.Patient;
@@ -68,7 +69,7 @@ public class PatientController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public PatientDTO addPatient(@RequestBody Patient patient) {
+    public PatientDTO addPatient(@RequestBody CreatePatientCommand patient) {
         return patientService.addPatient(patient);
     }
 

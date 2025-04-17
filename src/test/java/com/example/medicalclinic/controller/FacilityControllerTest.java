@@ -2,11 +2,9 @@ package com.example.medicalclinic.controller;
 
 import com.example.medicalclinic.exception.FacilityException;
 import com.example.medicalclinic.model.CreateFacilityCommand;
-import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.FacilityDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.entity.Facility;
-import com.example.medicalclinic.service.DoctorService;
 import com.example.medicalclinic.service.FacilityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,10 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -87,7 +84,7 @@ public class FacilityControllerTest {
 
     @Test
     void getFacilityByName_facilityNotFound_throwsException() throws Exception {
-        when(facilityService.getFacilityByName("name")).thenThrow(new FacilityException("Facility doesnt exist"));
+        when(facilityService.getFacilityByName("name")).thenThrow(new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/facilities/{facilityName}", "name")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -110,7 +107,7 @@ public class FacilityControllerTest {
 
     @Test
     void removeFacility_facilityNotFound_throwsException() throws Exception {
-        doThrow(new FacilityException("Facility doesnt exist")).when(facilityService).removeFacilityByName("name");
+        doThrow(new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND)).when(facilityService).removeFacilityByName("name");
 
         mockMvc.perform(delete("/facilities/{facilityName}", "name")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -137,7 +134,7 @@ public class FacilityControllerTest {
     @Test
     void editFacility_facilityNotFound_throwsException() throws Exception {
         Facility facility = createFacility(1L, "name");
-        when(facilityService.updateByName("name", facility)).thenThrow(new FacilityException("Facility doesnt exist"));
+        when(facilityService.updateByName("name", facility)).thenThrow(new FacilityException("Facility doesnt exist", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(put("/facilities/{facilityName}", "name")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -147,19 +144,20 @@ public class FacilityControllerTest {
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
-//    @Test
-//    void createFacilitiesWithDoctors_whenFound_return200() throws Exception {
-//        CreateFacilityCommand facilityCommand = createFacilityCommand("facilityName");
-//        FacilityDTO facilityDTO = createFacilityDto(1L, "name");
-//
-//        when(facilityService.saveFacilitiesWithDoctors(List.of(facilityCommand))).thenReturn(List.of(facilityDTO));
-//
-//        mockMvc.perform(post("/facilities")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(List.of(facilityDTO))))
-//                .andExpect(jsonPath("$[0].id", is(facilityDTO.getId().intValue())))
-//                .andExpect(jsonPath("$[0].facilityName", is(facilityDTO.getFacilityName())));
-//    }
+    @Test
+    void createFacilitiesWithDoctors_whenFound_return200() throws Exception {
+        CreateFacilityCommand facilityCommand = createFacilityCommand("facilityName");
+        FacilityDTO facilityDTO = createFacilityDto(1L, "name");
+
+        when(facilityService.saveFacilitiesWithDoctors(List.of(facilityCommand)))
+                .thenReturn(List.of(facilityDTO));
+
+        mockMvc.perform(post("/facilities")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(facilityCommand))))
+                .andExpect(jsonPath("$[0].id", is(facilityDTO.getId().intValue())))
+                .andExpect(jsonPath("$[0].facilityName", is(facilityDTO.getFacilityName())));
+    }
 
     private FacilityDTO createFacilityDto(Long facilityId, String facilityName) {
         return FacilityDTO.builder()

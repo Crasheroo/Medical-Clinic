@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -91,7 +92,7 @@ public class PatientControllerTest {
         String email = "test@email.com";
         String errorMessage = "Patient doesnt exist";
 
-        when(patientService.getPatientByEmail(any())).thenThrow(new PatientException(errorMessage));
+        when(patientService.getPatientByEmail(any())).thenThrow(new PatientException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/patients/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -123,13 +124,13 @@ public class PatientControllerTest {
         Patient patient = createPatient("test@example.com", "ID123456");
         String errorMessage = "Patient with email: " + patient.getEmail() + " already exists";
 
-        when(patientService.addPatient(any())).thenThrow(new PatientException(errorMessage));
+        when(patientService.addPatient(any())).thenThrow(new PatientException(errorMessage, HttpStatus.CONFLICT));
 
         mockMvc.perform(post("/patients")
                         .content(objectMapper.writeValueAsString(patient))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("CONFLICT")))
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
@@ -138,13 +139,13 @@ public class PatientControllerTest {
         Patient patient = createPatient("test@example.com", "ID123456");
         String errorMessage = "Patient with IdCardNo: " + patient.getIdCardNo() + " already exists";
 
-        when(patientService.addPatient(any())).thenThrow(new PatientException(errorMessage));
+        when(patientService.addPatient(any())).thenThrow(new PatientException(errorMessage, HttpStatus.CONFLICT));
 
         mockMvc.perform(post("/patients")
                         .content(objectMapper.writeValueAsString(patient))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
+                .andExpect(jsonPath("$.status", is("CONFLICT")))
                 .andExpect(jsonPath("$.errorTime").exists());
     }
 
@@ -167,7 +168,7 @@ public class PatientControllerTest {
         String email = "test@email.com";
         String errorMessage = "Patient doesnt exist";
 
-        doThrow(new PatientException(errorMessage)).when(patientService).removePatientByEmail(email);
+        doThrow(new PatientException(errorMessage, HttpStatus.NOT_FOUND)).when(patientService).removePatientByEmail(email);
 
         mockMvc.perform(delete("/patients/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -197,7 +198,7 @@ public class PatientControllerTest {
         String email = "test@email.com";
         String errorMessage = "Patient doesnt Exist";
         Patient patient = createPatient("test@example.com", "ID123456");
-        when(patientService.editPatientByEmail(eq(email), any())).thenThrow(new PatientException(errorMessage));
+        when(patientService.editPatientByEmail(eq(email), any())).thenThrow(new PatientException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(put("/patients/{email}", email)
                         .content(objectMapper.writeValueAsString(patient))
@@ -229,7 +230,7 @@ public class PatientControllerTest {
         String password = "newPassword";
         String errorMessage = "Patient doesnt exist";
         ChangePasswordCommand passwordCommand = new ChangePasswordCommand(password);
-        when(patientService.changePassword(email, password)).thenThrow(new PatientException(errorMessage));
+        when(patientService.changePassword(email, password)).thenThrow(new PatientException(errorMessage, HttpStatus.NOT_FOUND));
 
         mockMvc.perform(patch("/patients/{email}/password", email)
                 .content(objectMapper.writeValueAsString(passwordCommand))

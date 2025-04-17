@@ -7,13 +7,12 @@ import com.example.medicalclinic.model.dto.VisitDTO;
 import com.example.medicalclinic.model.dto.VisitFilterDTO;
 import com.example.medicalclinic.model.entity.Visit;
 import com.example.medicalclinic.repository.VisitRepository;
-import com.example.medicalclinic.service.VisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,13 +24,13 @@ public class VisitHelper {
 
     public void validateTimes(LocalDateTime startTime, LocalDateTime endTime) {
         if (startTime.isBefore(LocalDateTime.now())) {
-            throw new VisitException("Can't create visits in the past");
+            throw new VisitException("Can't create visits in the past", HttpStatus.CONFLICT);
         }
         if (endTime.isBefore(startTime)) {
-            throw new VisitException("End time must be after start time");
+            throw new VisitException("End time must be after start time", HttpStatus.CONFLICT);
         }
         if (startTime.getMinute() % 15 != 0 || endTime.getMinute() % 15 != 0) {
-            throw new VisitException("Visits must be in quarter (00, 15, 30, 45)");
+            throw new VisitException("Visits must be in quarter (00, 15, 30, 45)", HttpStatus.CONFLICT);
         }
     }
 
@@ -48,7 +47,7 @@ public class VisitHelper {
         }
 
         if (filter.getPatientEmail() != null && filter.getDoctorId() != null) {
-            throw new VisitException("Cannot filter bot patientEmail and DoctorId");
+            throw new VisitException("Cannot filter bot patientEmail and DoctorId", HttpStatus.CONFLICT);
         }
 
         if (filter.getDoctorId() != null) {
