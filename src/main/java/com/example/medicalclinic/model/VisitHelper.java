@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -41,13 +42,17 @@ public class VisitHelper {
     }
 
     public PageableContentDTO<VisitDTO> filterVisits(VisitFilterDTO filter, VisitRepository visitRepository, Pageable pageable) {
+        if (filter == null) {
+            return convertToPageableDTO(visitRepository.findAll(pageable));
+        }
+
         if (filter.getPatientEmail() != null) {
             return convertToPageableDTO(
                     visitRepository.findAllByPatientEmail(filter.getPatientEmail(), pageable));
         }
 
         if (filter.getPatientEmail() != null && filter.getDoctorId() != null) {
-            throw new VisitException("Cannot filter bot patientEmail and DoctorId", HttpStatus.CONFLICT);
+            throw new VisitException("Cannot filter both patientEmail and DoctorId", HttpStatus.CONFLICT);
         }
 
         if (filter.getDoctorId() != null) {
@@ -67,6 +72,15 @@ public class VisitHelper {
         }
 
         return convertToPageableDTO(visitRepository.findAll(pageable));
+    }
+
+    //sekundy minuty godziny dni miesiące dni-tygodnia  * - > każda np godzina
+    @Scheduled(cron = "0 0 * * * *")
+    public void removePastVisits() {
+        List<Visit> pastVisits = visitRepository.findByEndTimeBefore(LocalDateTime.now());
+        if (!pastVisits.isEmpty()) {
+            visitRepository.deleteAll(pastVisits);
+        }
     }
 
     public PageableContentDTO<VisitDTO> convertToPageableDTO(Page<Visit> visitPage) {

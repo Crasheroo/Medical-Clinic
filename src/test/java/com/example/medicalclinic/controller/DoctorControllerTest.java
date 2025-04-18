@@ -99,7 +99,7 @@ public class DoctorControllerTest {
         String email = "email@email.com";
         String password = "password";
 
-        CreateDoctorCommand command = new CreateDoctorCommand(email, password);
+        CreateDoctorCommand command = new CreateDoctorCommand(email, "specialization", password);
         DoctorDTO doctor = createDoctorDto(doctorId, email);
 
         when(doctorService.addDoctor(command)).thenReturn(doctor);
@@ -119,7 +119,7 @@ public class DoctorControllerTest {
         String password = "password";
         String errorMessage = "Doctor already exist";
 
-        CreateDoctorCommand command = new CreateDoctorCommand(email, password);
+        CreateDoctorCommand command = new CreateDoctorCommand(email, "specialization", password);
 
         when(doctorService.addDoctor(any())).thenThrow(new DoctorException(errorMessage, HttpStatus.CONFLICT));
 
@@ -138,7 +138,7 @@ public class DoctorControllerTest {
         String newEmail = "updated@email.com";
         String newPassword = "newPassword";
 
-        CreateDoctorCommand doctorCommand = new CreateDoctorCommand(newEmail, newPassword);
+        CreateDoctorCommand doctorCommand = new CreateDoctorCommand(newEmail, "specialization", newPassword);
         DoctorDTO doctor = createDoctorDto(doctorId, newEmail);
 
         when(doctorService.editDoctorByEmail(email, doctorCommand)).thenReturn(doctor);
@@ -154,7 +154,7 @@ public class DoctorControllerTest {
     void editDoctor_doctorNotFound_throwException() throws Exception {
         String existingEmail = "doctor@example.com";
         String newEmail = "taken@email.com";
-        CreateDoctorCommand command = new CreateDoctorCommand( newEmail, "password");
+        CreateDoctorCommand command = new CreateDoctorCommand(newEmail, "specialization", "password");
 
         when(doctorService.editDoctorByEmail(existingEmail, command)).thenThrow(new DoctorException("Email is taken", HttpStatus.CONFLICT));
 
