@@ -93,7 +93,7 @@ public class VisitService {
     }
 
     @Transactional
-    public Visit reserveVisit(Long id, String patientEmail) {
+    public VisitDTO reserveVisit(Long id, String patientEmail) {
         Visit visit = visitRepository.findById(id)
                 .orElseThrow(() -> new VisitException("Visit doesnt exist", HttpStatus.NOT_FOUND));
 
@@ -101,6 +101,7 @@ public class VisitService {
                 .orElseThrow(() -> new PatientException("Patient doesnt exist", HttpStatus.NOT_FOUND));
 
         visit.setPatient(patient);
-        return visitRepository.save(visit);
+        visitRepository.save(visit);
+        return visitMapper.toDto(visit);
     }
 }

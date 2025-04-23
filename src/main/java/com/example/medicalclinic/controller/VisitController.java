@@ -71,7 +71,7 @@ public class VisitController {
             @ApiResponse(responseCode = "404", description = "Visit or patient not found")
     })
     @PostMapping("/{id}/reserve")
-    public Visit reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
+    public VisitDTO reserveVisit(@PathVariable Long id, @RequestParam String patientEmail) {
         return visitService.reserveVisit(id, patientEmail);
     }
 

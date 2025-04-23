@@ -6,7 +6,6 @@ import com.example.medicalclinic.model.CreateVisitCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
-import com.example.medicalclinic.model.entity.Visit;
 import com.example.medicalclinic.service.VisitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -141,14 +140,14 @@ public class VisitControllerTest {
         Long visitId = 1L;
         String patientEmail = "patient@example.com";
 
-        Visit visit = Visit.builder()
+        VisitDTO visitDTO = VisitDTO.builder()
                 .id(visitId)
                 .build();
 
         when(visitService.reserveVisit(
                 eq(visitId),
                 eq(patientEmail)
-        )).thenReturn(visit);
+        )).thenReturn(visitDTO);
 
         // When & Then
         mockMvc.perform(post("/visits/{id}/reserve", visitId)

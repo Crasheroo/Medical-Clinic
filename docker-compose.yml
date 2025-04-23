@@ -51,6 +51,8 @@ services: # kontener z konfiguracja
       - "8081:8081"
     networks:
       - medicalclinic-net
+    environment:
+      medical-clinic_url: http://app:8080/
 
 networks:
   medicalclinic-net:
