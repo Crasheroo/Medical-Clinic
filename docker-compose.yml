@@ -1,0 +1,61 @@
+services: # kontener z konfiguracja
+  db: # nazwa serwisu z db postgresa
+    image: postgres:latest # obraz postgresa
+    container_name: medicalclinic-db # nazwa kontenera
+    environment: # zmienne srodowiskowe
+      POSTGRES_DB: medicalclinic # nazwa bazy danych
+      POSTGRES_USER: postgres # nazwa usera
+      POSTGRES_PASSWORD: postgres  # haslo do db
+    ports: # mapowanie portow
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medicalclinic-net # przypisanie do sieci
+
+  app: # nazwa serwisu z aplikacja
+    build: . # buduje obraz na podstawie dockerfile z tego katalogu
+    container_name: medicalclinic-app #nazwa kontenera
+    depends_on: # na czym polega (kolejnosc uruchamiania)
+      - db
+    ports: # mapowanie portow
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/medicalclinic
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      PGADMIN_LISTEN_PORT: 8080
+    networks:
+      - medicalclinic-net # przypisanie do tej samej sieci zeby mogl sie polaczyc z db
+
+  pgadmin:
+    image: elestio/pgadmin:latest
+    container_name: pgadmin
+    environment: # zmienne srodowiskowe
+      PGADMIN_DEFAULT_EMAIL: admin@email.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 1234
+    ports:
+      - "1234:1234"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - medicalclinic-net
+
+  proxy:
+    image: medical-clinic-proxy
+    container_name: proxy
+    depends_on:
+      - app
+    ports:
+      - "8081:8081"
+    networks:
+      - medicalclinic-net
+    environment:
+      medical-clinic_url: http://app:8080/
+
+networks:
+  medicalclinic-net:
+volumes:
+  postgres_data:
+  pgadmin_data:

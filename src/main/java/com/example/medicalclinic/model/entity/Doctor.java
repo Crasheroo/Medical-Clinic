@@ -18,6 +18,7 @@ public class Doctor {
     private Long id;
     private String email;
     private String password;
+    private String specialty;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "doctor_facility",

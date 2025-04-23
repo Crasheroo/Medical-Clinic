@@ -1,5 +1,6 @@
 package com.example.medicalclinic.mapper;
 
+import com.example.medicalclinic.model.CreatePatientCommand;
 import com.example.medicalclinic.model.entity.Patient;
 import com.example.medicalclinic.model.dto.PatientDTO;
 import org.mapstruct.Mapper;
@@ -11,7 +12,8 @@ public interface PatientMapper {
 
     @Mapping(source = "patient", target = "fullName", qualifiedByName = "toFullName")
     PatientDTO toDTO (Patient patient);
-    Patient toEntity(PatientDTO patientDTO);
+    @Mapping(target = "id", source = "email")
+    Patient toEntity(CreatePatientCommand command);
 
     @Named("toFullName")
     default String mapToFullName(Patient patient) {

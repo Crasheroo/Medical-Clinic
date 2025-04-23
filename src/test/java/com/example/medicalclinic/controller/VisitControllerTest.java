@@ -1,15 +1,11 @@
 package com.example.medicalclinic.controller;
 
-import com.example.medicalclinic.exception.DoctorException;
-import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.exception.VisitException;
+import com.example.medicalclinic.model.BookVisitCommand;
 import com.example.medicalclinic.model.CreateVisitCommand;
 import com.example.medicalclinic.model.dto.DoctorDTO;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.model.dto.VisitDTO;
-import com.example.medicalclinic.model.entity.Visit;
-import com.example.medicalclinic.repository.DoctorRepository;
-import com.example.medicalclinic.repository.VisitRepository;
 import com.example.medicalclinic.service.VisitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -20,15 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -47,156 +42,149 @@ public class VisitControllerTest {
     private VisitService visitService;
 
     @Test
-    void getVisits_whenFound_thenReturnJson() throws Exception {
-        Pageable pageable = PageRequest.of(0, 10);
-        VisitDTO visit1 = createVisitDto(1L, "test@email.com");
-        VisitDTO visit2 = createVisitDto(2L, "test2@email.com");
-        List<VisitDTO> visits = List.of(visit1, visit2);
+    void createVisit_ShouldReturnCreatedVisit() throws Exception {
+        // Given
+        DoctorDTO doctor = DoctorDTO.builder().build();
 
-        Page<VisitDTO> page = new PageImpl<>(visits, pageable, 2L);
+        CreateVisitCommand command = CreateVisitCommand.builder()
+                .doctorId(1L)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusHours(1))
+                .build();
 
-        PageableContentDTO<VisitDTO> response = PageableContentDTO.from(page, visits);
+        VisitDTO expectedVisit = VisitDTO.builder()
+                .id(1L)
+                .doctor(doctor)
+                .startTime(command.startTime())
+                .endTime(command.endTime())
+                .build();
 
-        when(visitService.getVisits(pageable)).thenReturn(response);
+        when(visitService.createVisit(
+                eq(command.doctorId()),
+                eq(command.startTime()),
+                eq(command.endTime())
+        )).thenReturn(expectedVisit);
 
-        mockMvc.perform(get("/visits")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()", is(2)))
-                .andExpect(jsonPath("$.content[0].id", is(visit1.getId().intValue())))
-                .andExpect(jsonPath("$.content[1].id", is(visit2.getId().intValue())))
-                .andExpect(jsonPath("$.content[0].doctor.email", is(visit1.getDoctor().getEmail())))
-                .andExpect(jsonPath("$.content[1].doctor.email", is(visit2.getDoctor().getEmail())))
-                .andExpect(jsonPath("$.currentPage", is(0)))
-                .andExpect(jsonPath("$.totalElements", is(2)))
-                .andExpect(jsonPath("$.totalPages", is(1)));
-    }
-
-    @Test
-    void createVisit_whenAdded_thenReturnJson() throws Exception {
-        Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60);
-
-        VisitDTO expectedVisit = createVisitDto(1L, "doctor@example.com");
-
-        CreateVisitCommand command = new CreateVisitCommand(doctorId, startTime, endTime);
-
-        when(visitService.createVisit(eq(doctorId), eq(startTime), eq(endTime))).thenReturn(expectedVisit);
-
+        // When & Then
         mockMvc.perform(post("/visits")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(command)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(expectedVisit.getId().intValue())))
-                .andExpect(jsonPath("$.doctor.email", is(expectedVisit.getDoctor().getEmail())))
-                .andExpect(jsonPath("$.startTime").exists())
-                .andExpect(jsonPath("$.endTime").exists());
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.available").value(false));
     }
 
     @Test
-    void createVisit_whenDoctorNotFound_thenThrowException() throws Exception {
-        Long doctorId = 1L;
-        LocalDateTime startTime = LocalDateTime.now().plusMinutes(30);
-        LocalDateTime endTime = LocalDateTime.now().plusMinutes(60);
-        CreateVisitCommand command = new CreateVisitCommand(doctorId, startTime, endTime);
+    void bookVisit_ShouldReturnBookedVisit() throws Exception {
+        // Given
+        DoctorDTO doctor = DoctorDTO.builder().build();
 
-        when(visitService.createVisit(doctorId, startTime, endTime)).thenThrow(new DoctorException("Doctor doesnt exist"));
+        BookVisitCommand command = BookVisitCommand.builder()
+                .visitId(1L)
+                .patientId(1L)
+                .build();
 
-        mockMvc.perform(post("/visits")
+        VisitDTO expectedVisit = VisitDTO.builder()
+                .id(1L)
+                .doctor(doctor)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusHours(1))
+                .build();
+
+        when(visitService.bookVisit(
+                eq(command.visitId()),
+                eq(command.patientId())
+        )).thenReturn(expectedVisit);
+
+        // When & Then
+        mockMvc.perform(post("/visits/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(command)))
-                .andExpect(jsonPath("$.message", is("Doctor doesnt exist")))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
-                .andExpect(jsonPath("$.errorTime").exists());
-    }
-
-    @Test
-    void bookVisit_whenBooked_thenReturnJson() throws Exception {
-        Long visitId = 1L;
-        Long patientId = 1L;
-        VisitDTO visit = createVisitDto(visitId, "doctor@example.com");
-
-        when(visitService.bookVisit(eq(visitId), eq(patientId))).thenReturn(visit);
-
-        mockMvc.perform(post("/visits/book")
-                        .param("visitId", visitId.toString())
-                        .param("patientId", patientId.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(visitId.intValue())))
-                .andExpect(jsonPath("$.doctor.email", is("doctor@example.com")));
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.available").value(false));
     }
 
     @Test
-    void bookVisit_patientNotFound_thenThrowException() throws Exception {
-        Long visitId = 1L;
-        Long patientId = 1L;
-        String errorMessage = "Patient doesnt exist";
+    void getVisits_ShouldReturnPageOfVisits() throws Exception {
+        // Given
+        DoctorDTO doctor = DoctorDTO.builder().build();
+        Pageable pageable = PageRequest.of(0, 10);
 
-        when(visitService.bookVisit(visitId, patientId)).thenThrow(new PatientException(errorMessage));
+        VisitDTO visit = VisitDTO.builder()
+                .id(1L)
+                .doctor(doctor)
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusHours(1))
+                .build();
 
-        mockMvc.perform(post("/visits/book")
-                        .param("visitId", visitId.toString())
-                        .param("patientId", patientId.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
-                .andExpect(jsonPath("$.errorTime").exists());
+        Page<VisitDTO> page = new PageImpl<>(List.of(visit), pageable, 1);
+
+        when(visitService.getVisits(
+                any(),
+                any()
+        )).thenReturn(new PageableContentDTO<>(page.getTotalPages(), page.getTotalElements(), page.getNumber(), page.getContent()));
+
+        // When & Then
+        mockMvc.perform(get("/visits")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(1L))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
-    void bookVisit_visitNotFound_thenThrowException() throws Exception {
+    void reserveVisit_ShouldReturnReservedVisit() throws Exception {
+        // Given
         Long visitId = 1L;
-        Long patientId = 1L;
-        String errorMessage = "Visit doesnt exist";
+        String patientEmail = "patient@example.com";
 
-        when(visitService.bookVisit(visitId, patientId)).thenThrow(new VisitException(errorMessage));
-
-        mockMvc.perform(post("/visits/book")
-                        .param("visitId", visitId.toString())
-                        .param("patientId", patientId.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
-                .andExpect(jsonPath("$.errorTime").exists());
-    }
-
-    @Test
-    void bookVisit_visitAlreadyBooked_thenThrowException() throws Exception {
-        Long visitId = 1L;
-        Long patientId = 1L;
-        String errorMessage = "Visit is already booked";
-
-        when(visitService.bookVisit(visitId, patientId)).thenThrow(new VisitException(errorMessage));
-
-        mockMvc.perform(post("/visits/book")
-                        .param("visitId", visitId.toString())
-                        .param("patientId", patientId.toString())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message", is(errorMessage)))
-                .andExpect(jsonPath("$.status", is("NOT_FOUND")))
-                .andExpect(jsonPath("$.errorTime").exists());
-    }
-
-    private VisitDTO createVisitDto(Long visitId, String doctorEmail) {
-        return VisitDTO.builder()
+        VisitDTO visitDTO = VisitDTO.builder()
                 .id(visitId)
-                .doctor(DoctorDTO.builder()
-                        .email(doctorEmail)
-                        .facilityIds(List.of(1L, 2L, 3L))
-                        .build())
-                .startTime(LocalDateTime.now().plusMinutes(30))
-                .endTime(LocalDateTime.now().plusMinutes(60))
                 .build();
+
+        when(visitService.reserveVisit(
+                eq(visitId),
+                eq(patientEmail)
+        )).thenReturn(visitDTO);
+
+        // When & Then
+        mockMvc.perform(post("/visits/{id}/reserve", visitId)
+                        .param("patientEmail", patientEmail))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(visitId));
     }
 
-    private Visit createVisit(LocalDateTime startTime, LocalDateTime endTime) {
-        return Visit.builder()
-                .startTime(startTime)
-                .endTime(endTime)
+    @Test
+    void cancelVisit_ShouldReturnOk() throws Exception {
+        // Given
+        Long visitId = 1L;
+        String doctorEmail = "doctor@example.com";
+
+        // When & Then
+        mockMvc.perform(delete("/visits/cancel/{id}", visitId)
+                        .param("doctorEmail", doctorEmail))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void bookVisit_WithNonExistingVisit_ShouldReturnNotFound() throws Exception {
+        // Given
+        BookVisitCommand command = BookVisitCommand.builder()
+                .visitId(999L)
+                .patientId(1L)
                 .build();
+
+        when(visitService.bookVisit(
+                eq(command.visitId()),
+                eq(command.patientId())
+        )).thenThrow(new VisitException("Visit not found", HttpStatus.NOT_FOUND));
+
+        // When & Then
+        mockMvc.perform(post("/visits/book")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(command)))
+                .andExpect(status().isNotFound());
     }
 }

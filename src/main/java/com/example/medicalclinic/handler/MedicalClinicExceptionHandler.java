@@ -18,31 +18,31 @@ public class MedicalClinicExceptionHandler extends ResponseEntityExceptionHandle
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(PatientException.class)
     public ErrorMessage handlePatientException(PatientException ex) {
-        return buildErrorResponse(ex.getMessage());
+        return buildErrorResponse(ex.getMessage(), ex.getStatus());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(DoctorException.class)
     public ErrorMessage handleDoctorException(DoctorException ex) {
-        return buildErrorResponse(ex.getMessage());
+        return buildErrorResponse(ex.getMessage(), ex.getStatus());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(FacilityException.class)
     public ErrorMessage handleFacilityException(FacilityException ex) {
-        return buildErrorResponse(ex.getMessage());
+        return buildErrorResponse(ex.getMessage(), ex.getStatus());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(VisitException.class)
     public ErrorMessage handleVisitException(VisitException ex) {
-        return buildErrorResponse(ex.getMessage());
+        return buildErrorResponse(ex.getMessage(), ex.getStatus());
     }
 
-    private ErrorMessage buildErrorResponse(String message) {
+    private ErrorMessage buildErrorResponse(String message, HttpStatus status) {
         return ErrorMessage.builder()
                 .message(message)
-                .status(HttpStatus.NOT_FOUND)
+                .status(status)
                 .errorTime(LocalDateTime.now())
                 .build();
     }

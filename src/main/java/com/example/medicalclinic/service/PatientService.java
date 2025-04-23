@@ -1,5 +1,6 @@
 package com.example.medicalclinic.service;
 
+import com.example.medicalclinic.model.CreatePatientCommand;
 import com.example.medicalclinic.model.dto.PageableContentDTO;
 import com.example.medicalclinic.exception.PatientException;
 import com.example.medicalclinic.mapper.PatientMapper;
@@ -9,6 +10,7 @@ import com.example.medicalclinic.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,28 +34,28 @@ public class PatientService {
 
     public PatientDTO getPatientByEmail(String email) {
         return patientMapper.toDTO(patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient doesnt exist")));
+                .orElseThrow(() -> new PatientException("Patient doesnt exist", HttpStatus.NOT_FOUND)));
     }
 
     @Transactional
-    public PatientDTO addPatient(Patient patient) {
-        patientRepository.findByEmail(patient.getEmail())
-                .ifPresent(existing -> { throw new PatientException("Patient with email: " + patient.getEmail() + " already exists"); });
+    public PatientDTO addPatient(CreatePatientCommand patient) {
+        patientRepository.findByEmail(patient.email())
+                .ifPresent(existing -> { throw new PatientException("Patient with email: " + patient.email() + " already exists", HttpStatus.CONFLICT); });
 
-        patientRepository.findByIdCardNo(patient.getIdCardNo())
-                .ifPresent(existing -> { throw new PatientException("Patient with IdCardNo: " + patient.getIdCardNo() + " already exists"); });
+        patientRepository.findByIdCardNo(patient.idCardNo())
+                .ifPresent(existing -> { throw new PatientException("Patient with IdCardNo: " + patient.idCardNo() + " already exists", HttpStatus.CONFLICT); });
 
-        return patientMapper.toDTO(patientRepository.save(patient));
+        return patientMapper.toDTO(patientRepository.save(patientMapper.toEntity(patient)));
     }
 
     public void removePatientByEmail(String email) {
         patientRepository.delete(patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient doesnt exist")));
+                .orElseThrow(() -> new PatientException("Patient doesnt exist", HttpStatus.NOT_FOUND)));
     }
 
     public PatientDTO editPatientByEmail(String email, Patient updatedPatient) {
         Patient existingPatient = patientRepository.findByEmail(email)
-                .orElseThrow(() -> new PatientException("Patient doesnt exist"));
+                .orElseThrow(() -> new PatientException("Patient doesnt exist", HttpStatus.NOT_FOUND));
         updateEmailIfChanged(existingPatient, updatedPatient);
         existingPatient.updateFrom(updatedPatient);
         return patientMapper.toDTO(patientRepository.save(existingPatient));
@@ -61,7 +63,7 @@ public class PatientService {
 
     public Patient changePassword(String email, String password) {
         Patient existingPatient = patientRepository.findByEmail(email)
-                        .orElseThrow(() -> new PatientException("Patient doesnt exist"));
+                        .orElseThrow(() -> new PatientException("Patient doesnt exist", HttpStatus.NOT_FOUND));
         existingPatient.setPassword(password);
         return patientRepository.save(existingPatient);
     }
@@ -71,7 +73,7 @@ public class PatientService {
                 .filter(newEmail -> !newEmail.equals(existingPatient.getEmail()))
                 .ifPresent(newEmail -> {
                     if (patientRepository.findByEmail(newEmail).isPresent()) {
-                        throw new PatientException("Email " + newEmail + " is already in use.");
+                        throw new PatientException("Email " + newEmail + " is already in use.", HttpStatus.CONFLICT);
                     }
                     existingPatient.setEmail(newEmail);
                 });

@@ -12,10 +12,8 @@ import com.example.medicalclinic.repository.DoctorRepository;
 import com.example.medicalclinic.repository.FacilityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -129,7 +127,7 @@ public class FacilityServiceTest {
     void updateByName_FacilityExist_DataChanged() {
         // Given
         String facilityName = "testName";
-        Facility newFacility = createFacility(1L, "newFacility");
+        FacilityDTO newFacility = createFacilityDto(1L, "newFacility");
         Facility currentFacility = createFacility(1L, "oldFacility");
         when(facilityRepository.findByFacilityName(facilityName)).thenReturn(Optional.of(currentFacility));
         when(facilityRepository.save(any())).thenReturn(currentFacility);
@@ -146,7 +144,7 @@ public class FacilityServiceTest {
     void updateByName_facilityNotFound_throwsException() {
         // Given
         String facilityName = "testName";
-        Facility facility = createFacility(1L, facilityName);
+        FacilityDTO facility = createFacilityDto(1L, facilityName);
         when(facilityRepository.findByFacilityName(facilityName)).thenReturn(Optional.empty());
 
         // When
@@ -232,6 +230,14 @@ public class FacilityServiceTest {
                 .id(id)
                 .facilityName(facilityName)
                 .doctors(new HashSet<>())
+                .build();
+    }
+
+    private FacilityDTO createFacilityDto(Long id, String facilityName) {
+        return FacilityDTO.builder()
+                .id(id)
+                .facilityName(facilityName)
+                .doctorIds(new HashSet<>())
                 .build();
     }
 }

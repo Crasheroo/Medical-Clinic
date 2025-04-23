@@ -18,7 +18,7 @@ public class Visit {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "doctor_id")
+    @JoinColumn
     private Doctor doctor;
 
     @ManyToOne

@@ -1,10 +1,47 @@
 databaseChangeLog:
   - changeSet:
-      id: 1
+      id: 2
       author: CrasherBobi
       changes:
         - createTable:
-            tableName: PATIENT
+            tableName: FACILITY
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: facility_name
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: postcode
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: building_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: DOCTOR
             columns:
               - column:
                   name: id
@@ -17,32 +54,9 @@ databaseChangeLog:
                   name: email
                   type: varchar(255)
                   constraints:
-                    unique: true
                     nullable: false
               - column:
                   name: password
                   type: varchar(255)
                   constraints:
                     nullable: false
-              - column:
-                  name: id_card_no
-                  type: varchar(255)
-                  constraints:
-                    unique: true
-                    nullable: false
-              - column:
-                  name: first_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: last_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: phone_number
-                  type: varchar(255)
-              - column:
-                  name: birthday
-                  type: date

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class VisitDTO {
     private Long id;
     private DoctorDTO doctor;
+    private PatientDTO patient;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private boolean isAvailable;
